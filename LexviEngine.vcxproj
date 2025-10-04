@@ -149,6 +149,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Utils\UBO.cpp" />
     <ClInclude Include="include\Camera\Camera.hpp" />
     <ClInclude Include="include\LexviEngine.hpp" />
     <ClInclude Include="include\Game\Game.hpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\Renderable\Primitives\Plane.cpp" />
     <ClCompile Include="src\Renderable\Primitives\Quad.cpp" />
     <ClCompile Include="src\Renderable\Primitives\Sphere.cpp" />
+    <ClInclude Include="include\Utils\UBO.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderable\InstancedRenderable.cpp" />

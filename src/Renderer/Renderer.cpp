@@ -21,10 +21,6 @@ void Lexvi::Renderer::Draw(IRenderable& obj, const Camera& camera, const Shader*
 	}
 
 	currentShader->use();
-	currentShader->setMat4("model", obj.getTransforms());
-	currentShader->setMat4("view", camera.getViewMatrix());
-	currentShader->setMat4("projection", camera.getProjectionMatrix());
-
 	obj.Draw(currentShader);
 }
 
@@ -46,10 +42,6 @@ void Lexvi::Renderer::Draw(std::vector<IRenderable>& objects, const Camera& came
 	}
 
 	currentShader->use();
-
-	currentShader->setMat4("view", camera.getViewMatrix());
-	currentShader->setMat4("projection", camera.getProjectionMatrix());
-
 	for (auto& obj : objects) {
 		if (!obj.isVisible(camera)) continue;
 		currentShader->setMat4("model", obj.getTransforms());

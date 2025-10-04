@@ -25,6 +25,11 @@ namespace Lexvi {
         glm::vec3 max;
     };
 
+    struct CameraData {
+        glm::mat4 view;
+        glm::mat4 projection;
+    };
+
     bool isInFrustum(const CameraFrustum& frustum, const CameraAABB& aabb);
 
     bool IntersectPlanes(const CameraPlane& p1, const CameraPlane& p2, const CameraPlane& p3, glm::vec3& outPoint);
@@ -57,6 +62,7 @@ namespace Lexvi {
         glm::mat4 projectionMatrix{ 1.0f };
 
         CameraFrustum frustum{};
+        CameraData cameraData{};
 
         std::shared_ptr<Input> inputSystem = nullptr;
 
@@ -86,6 +92,8 @@ namespace Lexvi {
         glm::mat4 getViewMatrix() const;
         glm::mat4 getProjectionMatrix() const;
         CameraFrustum getFrustum() const;
+
+        const CameraData& getCameraData() const{ return cameraData; };
 
     public:
         void SetInputSystem(std::shared_ptr<Input> inputSys);

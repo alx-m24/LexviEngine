@@ -13,6 +13,7 @@
 #include "Shader/ComputeShader.hpp"
 #include "Shader/Shader.hpp"
 #include "Camera/Camera.hpp"
+#include "Utils/UBO.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -66,7 +67,7 @@ namespace Lexvi {
 		GLuint allSubInstancesSSBO;
 		GLuint visibleSubInstancesSSBO;
 		GLuint indirectBuffer;
-		GLuint frustumUBO;
+		UBO frustumUBO;
 
 		std::shared_ptr<ComputeShader> cullShader;
 		std::shared_ptr<Camera> camera;
@@ -109,14 +110,12 @@ namespace Lexvi {
 			glCreateBuffers(1, &allSubInstancesSSBO);
 			glCreateBuffers(1, &visibleSubInstancesSSBO);
 			glCreateBuffers(1, &indirectBuffer);
-			glCreateBuffers(1, &frustumUBO);
 
 			glNamedBufferStorage(indirectBuffer, sizeof(DrawElementsIndirectCommand), &drawCmd, GL_DYNAMIC_STORAGE_BIT);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, indirectBuffer);
 
 			// Allocate 6 vec4s worth of space (each vec4 = 16 bytes, so 6 * 16 = 96 bytes)
-			glNamedBufferStorage(frustumUBO, sizeof(glm::vec4) * 6, nullptr, GL_DYNAMIC_DRAW);
-			glBindBufferBase(GL_UNIFORM_BUFFER, 2, frustumUBO);
+			CreateUBO(frustumUBO, sizeof(glm::vec4) * 6, 2);
 
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &maxX);
 			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxY);
@@ -275,7 +274,7 @@ namespace Lexvi {
 			cullShader->setVec3("cameraPos", camera->getPosition());
 			cullShader->setFloat("maxDistance", camera->getZNearAndZFar().y);
 
-			glNamedBufferSubData(frustumUBO, 0, sizeof(glm::vec4) * 6, frustumPlanes);
+			UpdateUBO(frustumUBO, frustumPlanes, sizeof(glm::vec4) * 6, 0);
 
 			uint32_t threadsPerGroupX = 32; // match shader local_size_x
 			uint32_t threadsPerGroupY = 32; // match shader local_size_y

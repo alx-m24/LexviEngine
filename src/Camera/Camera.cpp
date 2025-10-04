@@ -187,4 +187,6 @@ void Lexvi::Camera::updateMatricesAndFrustum()
     viewMatrix = glm::lookAt(position, position + front, worldUp);
     projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, zNear, zFar);
     updateFrustum(frustum, projectionMatrix * viewMatrix);
+
+    cameraData = { viewMatrix, projectionMatrix };
 }
