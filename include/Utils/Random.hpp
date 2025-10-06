@@ -12,6 +12,8 @@ namespace Lexvi {
         // Random float in [min, max)
         float Float(float min, float max);
 
+        uint32_t UInt_32(uint32_t min, uint32_t max);
+
         // Random angle in degrees [0, 360)
         float Angle();
 

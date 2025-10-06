@@ -149,6 +149,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Renderable\Primitives\SemiCircle.cpp" />
+    <ClCompile Include="src\Utils\SSBO.cpp" />
     <ClCompile Include="src\Utils\UBO.cpp" />
     <ClInclude Include="include\Camera\Camera.hpp" />
     <ClInclude Include="include\LexviEngine.hpp" />
@@ -162,6 +164,7 @@
     <ClInclude Include="include\Renderable\Primitives\Cylinder.hpp" />
     <ClInclude Include="include\Renderable\Primitives\Plane.hpp" />
     <ClInclude Include="include\Renderable\Primitives\Quad.hpp" />
+    <ClInclude Include="include\Renderable\Primitives\SemiCircle.hpp" />
     <ClInclude Include="include\Renderable\Primitives\Sphere.hpp" />
     <ClInclude Include="include\Renderer\Renderer.hpp" />
     <ClInclude Include="include\Shader\ComputeShader.hpp" />
@@ -177,6 +180,7 @@
     <ClCompile Include="src\Renderable\Primitives\Plane.cpp" />
     <ClCompile Include="src\Renderable\Primitives\Quad.cpp" />
     <ClCompile Include="src\Renderable\Primitives\Sphere.cpp" />
+    <ClInclude Include="include\Utils\SSBO.hpp" />
     <ClInclude Include="include\Utils\UBO.hpp" />
   </ItemGroup>
   <ItemGroup>

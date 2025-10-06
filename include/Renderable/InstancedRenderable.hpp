@@ -34,6 +34,8 @@ namespace Lexvi {
 		virtual glm::vec3 getPosition() = 0;
 	};
 
+	inline uint32_t InstanceSystemCount = 0;
+
 	template<class MeshType>
 	class InstanceSystem : public IRenderable {
 	private:
@@ -88,6 +90,7 @@ namespace Lexvi {
 			: generateMeshFunc(genMesh), cullShader(cullShader)
 		{
 			InitSystem();
+			++InstanceSystemCount;
 		}
 
 		inline void SetCurrentCamera(std::shared_ptr<Camera> cam) {
@@ -112,7 +115,7 @@ namespace Lexvi {
 			glCreateBuffers(1, &indirectBuffer);
 
 			glNamedBufferStorage(indirectBuffer, sizeof(DrawElementsIndirectCommand), &drawCmd, GL_DYNAMIC_STORAGE_BIT);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, indirectBuffer);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2 + InstanceSystemCount * 3, indirectBuffer);
 
 			// Allocate 6 vec4s worth of space (each vec4 = 16 bytes, so 6 * 16 = 96 bytes)
 			CreateUBO(frustumUBO, sizeof(glm::vec4) * 6, 2);
@@ -195,10 +198,10 @@ namespace Lexvi {
 			MAX_SUBINSTANCE_COUNT = std::max(DEFAULT_SUBINSTANCE_COUNT, allSubInstances.size() * 2);
 
 			glNamedBufferData(allSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU), nullptr, GL_DYNAMIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, allSubInstancesSSBO);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0 + InstanceSystemCount * 3, allSubInstancesSSBO);
 
 			glNamedBufferData(visibleSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU), nullptr, GL_DYNAMIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, visibleSubInstancesSSBO);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1 + InstanceSystemCount * 3, visibleSubInstancesSSBO);
 
 			// Clear the old pending updates
 			pendingUpdates.clear();

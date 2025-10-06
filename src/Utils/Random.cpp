@@ -8,6 +8,11 @@ namespace Lexvi {
         return dist(rng);
     }
 
+    uint32_t RandomUtils::UInt_32(uint32_t min, uint32_t max) {
+        std::uniform_int_distribution<uint32_t> dist(min, max);
+        return dist(rng);
+    }
+
     float RandomUtils::Angle() {
         return Float(0.0f, 360.0f);
     }
