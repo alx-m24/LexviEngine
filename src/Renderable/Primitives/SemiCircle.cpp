@@ -68,10 +68,10 @@ namespace Lexvi {
         glBindVertexArray(mesh.VAO);
 
         if (instanceCount > 1) {
-            glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(instanceCount));
+            glDrawElementsInstanced(GL_TRIANGLES,  static_cast<GLsizei>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(instanceCount));
         }
         else {
-            glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr);
         }
     }
 

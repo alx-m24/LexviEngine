@@ -60,7 +60,7 @@ void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame)
 		return;
 	}
 	glfwMakeContextCurrent(window);
-	//glfwSwapInterval(1);
+	glfwSwapInterval(1);
 
 	glfwSetWindowUserPointer(window, inputSystem.get());
 	glfwSetKeyCallback(window, Lexvi::Input::keyCallback);

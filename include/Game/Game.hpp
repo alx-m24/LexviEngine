@@ -2,6 +2,10 @@
 
 #include "Renderer/Renderer.hpp"
 
+namespace Lexvi {
+    class Engine;
+}
+
 class Game
 {
 public:

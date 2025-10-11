@@ -24,7 +24,7 @@ namespace Lexvi {
 	struct IEntity {
 		virtual std::vector<IEntity*> getChildren() = 0;
 		virtual glm::mat4 getModel() const = 0;
-		virtual glm::vec3 getExtraData() const = 0;
+		virtual glm::vec2 getExtraData() const = 0;
 		virtual ~IEntity() = default;
 	};
 
@@ -41,7 +41,8 @@ namespace Lexvi {
 	private:
 		struct SubInstanceDataCPU {
 			glm::mat4 model;
-			glm::vec3 extraData;
+			glm::vec2 extraData;
+			bool updated;
 			bool active;
 		};
 
@@ -53,7 +54,7 @@ namespace Lexvi {
 		SubInstanceDataGPU packSubInstance(const SubInstanceDataCPU& subInstance) {
 			return SubInstanceDataGPU{
 				subInstance.model,
-				glm::vec4(subInstance.extraData, (subInstance.active) ? 1.0f : 0.0f)
+				glm::vec4(subInstance.extraData, (subInstance.updated) ? 1.0f : 0.0f, (subInstance.active) ? 1.0f : 0.0f)
 			};
 		}
 
@@ -232,7 +233,7 @@ namespace Lexvi {
 			// Apply the origin offset as a translation
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), origin) * entity->getModel();
 
-			SubInstanceDataCPU data{ model, entity->getExtraData(), true };
+			SubInstanceDataCPU data{ model, entity->getExtraData(), true, true };
 			AllocateSubInstance(entityID, data);
 
 			for (auto child : entity->getChildren()) {
@@ -244,6 +245,14 @@ namespace Lexvi {
 		inline uint32_t AddEntity(IOwner& owner) {
 			uint32_t entityID = nextEntityID++;
 			RecursiveAddEntity(entityID, owner.getRoot(), owner.getPosition());
+			return entityID;
+		}
+
+		inline uint32_t Add_NONTREE_Entity(IOwner& owner) {
+			uint32_t entityID = nextEntityID++;
+			for (auto child : owner.getRoot()->getChildren()) {
+				RecursiveAddEntity(entityID, child, owner.getPosition());
+			}
 			return entityID;
 		}
 

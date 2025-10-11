@@ -17,6 +17,11 @@ namespace Lexvi {
 		glNamedBufferSubData(ssbo.id, offset, size, data);
 	}
 
+	void ResizeSSBO(SSBO& ssbo, size_t size) {
+		if (ssbo.id) DeleteSSBO(ssbo);
+		CreateSSBO(ssbo, size, ssbo.bindingPoint);
+	}
+
 	void DeleteSSBO(SSBO& ssbo)
 	{
 		glDeleteBuffers(1, &ssbo.id);
