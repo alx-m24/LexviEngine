@@ -13,6 +13,7 @@
 #include <assimp/scene.h>
 #include <atomic>
 #include <cassert>
+#include <implot.h>
 #include <filesystem>
 #include <fstream>
 #include <functional>

@@ -294,6 +294,8 @@ namespace Lexvi {
 
 			uint32_t totalThreads = static_cast<uint32_t>(allSubInstances.size());
 
+			if (totalThreads == 0) return;
+
 			// Total groups needed to cover all threads
 			uint32_t totalGroups = (totalThreads + threadsPerGroupX * threadsPerGroupY * threadsPerGroupZ - 1)
 				/ (threadsPerGroupX * threadsPerGroupY * threadsPerGroupZ);

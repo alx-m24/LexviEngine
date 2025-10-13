@@ -14,6 +14,7 @@ struct GLFWwindow;
 static std::atomic<size_t> g_allocatedBytes = 0;
 #endif
 
+
 struct FrameTimers {
 	float inputTime = 0.0f;
 	float updateTime = 0.0f;

@@ -21,6 +21,6 @@ public:
     virtual void render(Lexvi::Renderer& renderer) = 0;
 
     // Cleanup
-    virtual void shutdown() {}
+    virtual void shutdown() = 0;
 };
 

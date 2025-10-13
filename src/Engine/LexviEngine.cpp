@@ -10,9 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #ifdef _DEBUG
-#include <vcruntime_new.h>
-
-void* __CRTDECL operator new(std::size_t sz) {
+void* operator new(std::size_t sz) {
 	g_allocatedBytes += sz;
 	if (void* ptr = std::malloc(sz)) return ptr;
 	throw std::bad_alloc{};
@@ -32,10 +30,14 @@ Lexvi::Engine::~Engine()
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
+	if (game) {
+		game->shutdown();
+	}
 }
 
 void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame)
 {
+
 	// if game already define -> setup/init already called
 	if (game && window) return;
 
@@ -89,6 +91,7 @@ void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame)
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -96,7 +99,9 @@ void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame)
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 430");
+	ImGui_ImplOpenGL3_Init("#version 460");
+
+	ImPlot::CreateContext();
 }
 
 void Engine::run()
@@ -141,6 +146,9 @@ void Engine::run()
 		glfwSwapBuffers(window);
 	}
 
+	game->shutdown();
+
+	ImPlot::DestroyContext();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
@@ -215,3 +223,4 @@ void Lexvi::Engine::ShowEngineStats(float allocatedMB)
 
 	ImGui::End();
 }
+
