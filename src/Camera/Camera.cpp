@@ -157,6 +157,11 @@ glm::vec3 Lexvi::Camera::getUp() const
     return worldUp;
 }
 
+glm::vec3 Lexvi::Camera::getRight() const
+{
+    return right;
+}
+
 glm::vec2 Lexvi::Camera::getZNearAndZFar() const
 {
     return glm::vec2(zNear, zFar);
