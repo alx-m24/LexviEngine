@@ -1,5 +1,8 @@
 #pragma once
 
+#include <functional>
+#include <GLFW/glfw3.h>
+
 namespace Lexvi {
 	class Input {
 	public:

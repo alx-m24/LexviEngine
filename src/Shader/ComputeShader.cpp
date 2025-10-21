@@ -80,7 +80,7 @@ void ComputeShader::setInt(const std::string& name, int value) const
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void ComputeShader::setUint(const std::string& name, int value) const
+void ComputeShader::setUint(const std::string& name, unsigned int value) const
 {
     glUniform1ui(glGetUniformLocation(ID, name.c_str()), value);
 }

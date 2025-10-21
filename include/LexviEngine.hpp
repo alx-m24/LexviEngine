@@ -58,6 +58,9 @@ namespace Lexvi {
 	public:
 		void SetCurrentCamera(std::shared_ptr<Camera> camera);
 		void SetBackGroundColor(glm::vec3 color);
+		void LockAndHideCursor();
+		void ShowCursor();
+		void ToggleCursorState();
 		std::shared_ptr<Input> getInputSystem() const;
 		std::shared_ptr<Renderer> getRenderer() const;
 

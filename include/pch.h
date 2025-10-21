@@ -12,7 +12,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <atomic>
-#include <cassert>
+#include <array>
 #include <implot.h>
 #include <filesystem>
 #include <fstream>

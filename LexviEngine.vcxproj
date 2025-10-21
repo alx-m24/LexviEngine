@@ -167,6 +167,7 @@
     <ClInclude Include="include\Renderable\Primitives\SemiCircle.hpp" />
     <ClInclude Include="include\Renderable\Primitives\Sphere.hpp" />
     <ClInclude Include="include\Renderer\Renderer.hpp" />
+    <ClInclude Include="include\Settings\Settings.hpp" />
     <ClInclude Include="include\Shader\ComputeShader.hpp" />
     <ClInclude Include="include\Shader\Shader.hpp" />
     <ClInclude Include="include\pch.h" />

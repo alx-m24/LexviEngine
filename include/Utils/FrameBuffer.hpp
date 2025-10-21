@@ -14,6 +14,7 @@ namespace Lexvi {
 		return static_cast<FrameBufferAttachments>(static_cast<int>(a) | static_cast<int>(b));
 	}
 
+	std::string AttachmentToString(FrameBufferAttachments attachment);
 
 	class Input;
 
@@ -24,13 +25,19 @@ namespace Lexvi {
 	private:
 		unsigned int fbo = 0;
 		unsigned int width = 0, height = 0;
-		std::unordered_map<FrameBufferAttachments, Texture> attachedTextures{};
+		unsigned int colorAttachmentNum = 0;
+
+		std::unordered_map<std::string, Texture> attachedTextures;
 
 	public:
 		FrameBuffer() = default;
 		~FrameBuffer();
 
-		FrameBuffer(FrameBufferAttachments attachments, unsigned int width, unsigned int height) : attachments(attachments), width(width), height(height) { CreateFrameBuffer(); };
+		FrameBuffer(FrameBufferAttachments attachments, unsigned int width, unsigned int height) : attachments(attachments), width(width), height(height) { 
+			CreateFrameBuffer();
+		};
+
+		FrameBuffer(FrameBufferAttachments attachments, unsigned int colorAttachmentNum, unsigned int width, unsigned int height) : attachments(attachments), colorAttachmentNum(colorAttachmentNum), width(width), height(height) { CreateFrameBuffer(); };
 
 	public:
 		FrameBuffer(const FrameBuffer&) = delete;
@@ -41,6 +48,7 @@ namespace Lexvi {
 			width = other.width;
 			height = other.height;
 			attachments = other.attachments;
+			colorAttachmentNum = other.colorAttachmentNum;
 			attachedTextures = std::move(other.attachedTextures);
 
 			other.fbo = 0;
@@ -57,6 +65,7 @@ namespace Lexvi {
 				width = other.width;
 				height = other.height;
 				attachments = other.attachments;
+				colorAttachmentNum = other.colorAttachmentNum;
 				attachedTextures = std::move(other.attachedTextures);
 
 				other.fbo = 0;
@@ -77,7 +86,7 @@ namespace Lexvi {
 		void BindFrameBuffer() const;
 		void UnBindFrameBuffer() const;
 
-		const Texture* getAttachment(FrameBufferAttachments attachment) const;
+		const Texture* getAttachment(FrameBufferAttachments attachment, unsigned int number = 0) const;
 
 	private:
 		void CreateFrameBuffer();

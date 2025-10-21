@@ -224,3 +224,19 @@ void Lexvi::Engine::ShowEngineStats(float allocatedMB)
 	ImGui::End();
 }
 
+void Lexvi::Engine::LockAndHideCursor() {
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void Lexvi::Engine::ShowCursor() {
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Lexvi::Engine::ToggleCursorState() {
+	int state = glfwGetInputMode(window, GLFW_CURSOR);
+	if (state == GLFW_CURSOR_DISABLED)
+		ShowCursor();
+	else
+		LockAndHideCursor();
+
+}

@@ -74,12 +74,9 @@ namespace Lexvi {
         Camera() = default;
         virtual ~Camera() = default;
 
+        // Called by engine
         virtual void update(float dt) {
             // default does nothing
-        }
-
-        virtual void move(float dt) {
-            // default free-fly style
         }
 
         // Getters

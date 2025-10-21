@@ -38,13 +38,16 @@ namespace Lexvi {
     }
 
 
-    const Texture* FrameBuffer::getAttachment(FrameBufferAttachments attachment) const
+    const Texture* FrameBuffer::getAttachment(FrameBufferAttachments attachment, unsigned int number) const
     {
         // Assert that only one bit is set
         assert(attachment != FrameBufferAttachments::NONE &&
             (static_cast<int>(attachment) & (static_cast<int>(attachment) - 1)) == 0);
 
-        auto it = attachedTextures.find(attachment);
+        std::string attachmentString = AttachmentToString(attachment);
+        if (attachment & COLOR) attachmentString += std::to_string(number);
+
+        auto it = attachedTextures.find(attachmentString);
         assert(it != attachedTextures.end()); // make sure it's actually attached
 
         return &it->second;
@@ -62,18 +65,26 @@ namespace Lexvi {
 
         // COLOR ATTACHMENT
         if (attachments & COLOR) {
-            Texture colorTex;
-            colorTex.type = "FBO_COLOR";
-            glCreateTextures(GL_TEXTURE_2D, 1, &colorTex.id);
-            glTextureStorage2D(colorTex.id, 1, GL_RGBA8, width, height);
+            colorAttachmentNum = std::max(1u, colorAttachmentNum);
+            for (uint32_t i = 0; i < colorAttachmentNum; ++i) {
+                Texture colorTex;
+                colorTex.type = "FBO_COLOR";
+                glCreateTextures(GL_TEXTURE_2D, 1, &colorTex.id);
+                glTextureStorage2D(colorTex.id, 1, GL_RGBA8, width, height);
 
-            // Filtering
-            glTextureParameteri(colorTex.id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(colorTex.id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                // Filtering
+                glTextureParameteri(colorTex.id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTextureParameteri(colorTex.id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, colorTex.id, 0);
-            attachedTextures[COLOR] = std::move(colorTex);
-            drawBuffers.push_back(GL_COLOR_ATTACHMENT0);
+                glTextureParameteri(colorTex.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTextureParameteri(colorTex.id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+                GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
+                glNamedFramebufferTexture(fbo, attachment, colorTex.id, 0);
+
+                attachedTextures[std::string("COLOR" + std::to_string(i))] = std::move(colorTex);
+                drawBuffers.push_back(attachment);
+            }
         }
 
         // DEPTH ATTACHMENT
@@ -83,7 +94,7 @@ namespace Lexvi {
             depthTex.id = GenerateDepthTexture(width, height);
 
             glNamedFramebufferTexture(fbo, GL_DEPTH_ATTACHMENT, depthTex.id, 0);
-            attachedTextures[DEPTH] = std::move(depthTex);
+            attachedTextures["DEPTH"] = std::move(depthTex);
         }
 
         // STENCIL ATTACHMENT
@@ -95,15 +106,15 @@ namespace Lexvi {
             glTextureStorage2D(stencilTex.id, 1, GL_STENCIL_INDEX8, width, height);
 
             glNamedFramebufferTexture(fbo, GL_STENCIL_ATTACHMENT, stencilTex.id, 0);
-            attachedTextures[STENCIL] = std::move(stencilTex);
+            attachedTextures["STENCIL"] = std::move(stencilTex);
         }
 
         // Configure draw buffers
-        if (!drawBuffers.empty()) {
-            glNamedFramebufferDrawBuffers(fbo, static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
+        if (drawBuffers.empty()) {
+            glNamedFramebufferDrawBuffer(fbo, GL_NONE); // no color output
         }
         else {
-            glNamedFramebufferDrawBuffer(fbo, GL_NONE); // no color output
+            glNamedFramebufferDrawBuffers(fbo, static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
         }
 
         // Check FBO completeness
@@ -124,4 +135,23 @@ namespace Lexvi {
 		}
 		attachedTextures.clear();
 	}
+    std::string AttachmentToString(FrameBufferAttachments attachment)
+    {
+        // Assert that only one bit is set
+        assert(attachment != FrameBufferAttachments::NONE &&
+            (static_cast<int>(attachment) & (static_cast<int>(attachment) - 1)) == 0);
+
+        switch (attachment) {
+        case COLOR:
+            return "COLOR";
+        case DEPTH:
+            return "DEPTH";
+        case STENCIL:
+            return "STENCIL";
+        default:
+            return "NONE";
+        }
+
+        return std::string();
+    }
 }
