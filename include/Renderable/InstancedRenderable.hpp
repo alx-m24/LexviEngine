@@ -14,6 +14,7 @@
 #include "Shader/Shader.hpp"
 #include "Camera/Camera.hpp"
 #include "Utils/UBO.hpp"
+#include "Utils/SSBO.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -33,8 +34,6 @@ namespace Lexvi {
 		virtual ~IOwner() = default;
 		virtual glm::vec3 getPosition() = 0;
 	};
-
-	inline uint32_t InstanceSystemCount = 0;
 
 	template<class MeshType>
 	class InstanceSystem : public IRenderable {
@@ -67,9 +66,9 @@ namespace Lexvi {
 
 	private:
 		/* --- GPU Culling / Drawing --- */
-		GLuint allSubInstancesSSBO;
-		GLuint visibleSubInstancesSSBO;
-		GLuint indirectBuffer;
+		SSBO allSubInstancesSSBO;
+		SSBO visibleSubInstancesSSBO;
+		SSBO indirectBuffer;
 		UBO frustumUBO;
 
 		std::shared_ptr<ComputeShader> cullShader;
@@ -91,7 +90,6 @@ namespace Lexvi {
 			: generateMeshFunc(genMesh), cullShader(cullShader)
 		{
 			InitSystem();
-			++InstanceSystemCount;
 		}
 
 		inline void SetCurrentCamera(std::shared_ptr<Camera> cam) {
@@ -111,12 +109,21 @@ namespace Lexvi {
 			.baseInstance = 0
 			};
 
-			glCreateBuffers(1, &allSubInstancesSSBO);
-			glCreateBuffers(1, &visibleSubInstancesSSBO);
-			glCreateBuffers(1, &indirectBuffer);
+			CreateSSBO(allSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU), 0);
+			CreateSSBO(visibleSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU), 1);
 
-			glNamedBufferStorage(indirectBuffer, sizeof(DrawElementsIndirectCommand), &drawCmd, GL_DYNAMIC_STORAGE_BIT);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2 + InstanceSystemCount * 3, indirectBuffer);
+			ResizeSSBO(allSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU));
+			ResizeSSBO(visibleSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU));
+
+			// manually set indirectbuffer because of "GL_DYNAMIC_STORAGE_BIT"
+			indirectBuffer = {
+				.id = 0,
+				.bindingPoint = 2,
+				.size = sizeof(DrawElementsIndirectCommand)
+			};
+			glCreateBuffers(1, &indirectBuffer.id);
+			glNamedBufferStorage(indirectBuffer.id, indirectBuffer.size, &drawCmd, GL_DYNAMIC_STORAGE_BIT);
+			BindSSBO(indirectBuffer);
 
 			// Allocate 6 vec4s worth of space (each vec4 = 16 bytes, so 6 * 16 = 96 bytes)
 			CreateUBO(frustumUBO, sizeof(glm::vec4) * 6, 2);
@@ -165,6 +172,8 @@ namespace Lexvi {
 		}
 
 		inline void UpdateSSBOs() {
+			UpdateSSBO(indirectBuffer, &drawCmd, sizeof(DrawElementsIndirectCommand), 0);
+
 			if (MAX_SUBINSTANCE_COUNT < allSubInstances.size())
 				ResizeSSBOs();
 
@@ -186,8 +195,8 @@ namespace Lexvi {
 				}
 
 				size_t ssboIndex = pendingUpdates[start];
-				glNamedBufferSubData(allSubInstancesSSBO, ssboIndex * sizeof(SubInstanceDataGPU),
-					count * sizeof(SubInstanceDataGPU), &allSubInstances[ssboIndex]);
+
+				UpdateSSBO(allSubInstancesSSBO, &allSubInstances[ssboIndex], count * sizeof(SubInstanceDataGPU), ssboIndex * sizeof(SubInstanceDataGPU));
 
 				updated += count;
 			}
@@ -198,11 +207,8 @@ namespace Lexvi {
 		inline void ResizeSSBOs() {
 			MAX_SUBINSTANCE_COUNT = std::max(DEFAULT_SUBINSTANCE_COUNT, allSubInstances.size() * 2);
 
-			glNamedBufferData(allSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU), nullptr, GL_DYNAMIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0 + InstanceSystemCount * 3, allSubInstancesSSBO);
-
-			glNamedBufferData(visibleSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU), nullptr, GL_DYNAMIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1 + InstanceSystemCount * 3, visibleSubInstancesSSBO);
+			ResizeSSBO(allSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU));
+			ResizeSSBO(visibleSubInstancesSSBO, MAX_SUBINSTANCE_COUNT * sizeof(SubInstanceDataGPU));
 
 			// Clear the old pending updates
 			pendingUpdates.clear();
@@ -222,7 +228,7 @@ namespace Lexvi {
 			if (MAX_SUBINSTANCE_COUNT < allSubInstances.size())
 				ResizeSSBOs();
 
-			glNamedBufferSubData(allSubInstancesSSBO, 0, allSubInstances.size() * sizeof(SubInstanceDataGPU), allSubInstances.data());
+			UpdateSSBO(allSubInstancesSSBO, allSubInstances.data(), allSubInstances.size() * sizeof(SubInstanceDataGPU), 0);
 			pendingUpdates.clear();
 		}
 
@@ -276,7 +282,9 @@ namespace Lexvi {
 		inline void Draw(const Shader* shader) override {
 			UpdateSSBOs();
 
-			glNamedBufferSubData(indirectBuffer, 0, sizeof(DrawElementsIndirectCommand), &drawCmd);
+			BindSSBO(allSubInstancesSSBO);
+			BindSSBO(visibleSubInstancesSSBO);
+			BindSSBO(indirectBuffer);
 
 			glm::vec4 frustumPlanes[6];
 			GetFrustumPlanesVec4(camera->getFrustum(), frustumPlanes);
@@ -310,7 +318,7 @@ namespace Lexvi {
 
 			shader->use();
 			glBindVertexArray(baseMesh.VAO);
-			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectBuffer);
+			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectBuffer.id);
 			glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr);
 		}
 	};

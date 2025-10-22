@@ -27,4 +27,8 @@ namespace Lexvi {
 		glDeleteBuffers(1, &ssbo.id);
 		ssbo.id = 0;
 	}
+
+	void BindSSBO(SSBO& ssbo) {
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo.bindingPoint, ssbo.id);
+	}
 }

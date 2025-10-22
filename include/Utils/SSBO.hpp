@@ -13,4 +13,6 @@ namespace Lexvi {
 	void ResizeSSBO(SSBO& ssbo, size_t size);
 	void UpdateSSBO(SSBO& ssbo, const void* data, size_t size, uint32_t offset);
 	void DeleteSSBO(SSBO& ssbo);
+
+	void BindSSBO(SSBO& ssbo);
 }
