@@ -31,4 +31,9 @@ namespace Lexvi {
 	void BindSSBO(SSBO& ssbo) {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo.bindingPoint, ssbo.id);
 	}
+
+	void MemoryBarrier()
+	{
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	}
 }

@@ -15,4 +15,6 @@ namespace Lexvi {
 	void DeleteSSBO(SSBO& ssbo);
 
 	void BindSSBO(SSBO& ssbo);
+
+	void MemoryBarrier();
 }
