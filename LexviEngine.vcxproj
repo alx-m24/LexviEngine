@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderable\Primitives\SemiCircle.cpp" />
+    <ClCompile Include="src\stb_impl\stb_impl.cpp" />
     <ClCompile Include="src\Utils\SSBO.cpp" />
     <ClCompile Include="src\Utils\UBO.cpp" />
     <ClInclude Include="include\Camera\Camera.hpp" />

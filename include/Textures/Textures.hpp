@@ -17,5 +17,9 @@ namespace Lexvi {
     unsigned int TextureFromRawPixels(aiTexel* pixels, int width, int height);
     unsigned int GenerateDepthTexture(int width, int height);
 
+    void CreateComputeTexture(Texture& tex, unsigned int width, unsigned int height);
+    void BindComputeTexture(Texture& tex);
+    void SaveComputeTexture(Texture& tex, std::string name, unsigned int width, unsigned int height);
+
     void BindTexture(unsigned int unit, unsigned int id);
 }

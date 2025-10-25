@@ -28,12 +28,17 @@ namespace Lexvi {
 		ssbo.id = 0;
 	}
 
-	void BindSSBO(SSBO& ssbo) {
+	void BindSSBO(const SSBO& ssbo) {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo.bindingPoint, ssbo.id);
 	}
 
-	void MemoryBarrier()
+	void MemorySSBOBarrier()
 	{
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	}
+
+	void MemoryShaderImageBarrier()
+	{
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	}
 }

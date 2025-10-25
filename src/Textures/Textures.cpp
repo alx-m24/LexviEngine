@@ -203,6 +203,35 @@ namespace Lexvi {
         return depthMap;
     }
 
+    void CreateComputeTexture(Texture& tex, unsigned int width, unsigned int height)
+    {
+        glCreateTextures(GL_TEXTURE_2D, 1, &tex.id);
+        glTextureStorage2D(tex.id, 1, GL_RGBA8, width, height);
+
+        glTextureParameteri(tex.id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTextureParameteri(tex.id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTextureParameteri(tex.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(tex.id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    void BindComputeTexture(Texture& tex)
+    {
+        glBindImageTexture(0, tex.id, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
+    }
+
+    void SaveComputeTexture(Texture& tex, std::string name, unsigned int width, unsigned int height)
+    {
+        std::vector<unsigned char> pixels(width * height * 4); // RGBA8 -> 4 bytes per pixel
+
+        glBindTexture(GL_TEXTURE_2D, tex.id);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+        stbi_flip_vertically_on_write(1); // OpenGL’s origin is bottom-left
+
+        stbi_write_png(std::string(name + ".png").c_str(), width, height, 4, pixels.data(), width * 4);
+    }
+
+
     void BindTexture(unsigned int unit, unsigned int id)
     {
         glBindTextureUnit(unit, id);

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 // Standard C++ headers
 #include <cassert>
 #include <assimp/Importer.hpp>
@@ -31,6 +33,7 @@
 #include <random>
 #include <sstream>
 #include <stb_image.h>
+#include <stb_image_write.h>
 #include <string>
 #include <thread>
 #include <unordered_map>
