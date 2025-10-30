@@ -88,6 +88,11 @@ namespace Lexvi {
         SetupPlaneBuffers(plane);
     }
 
+    void DrawPlaneMesh(PlaneMesh& plane) {
+        glBindVertexArray(plane.VAO);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(plane.indices.size()), GL_UNSIGNED_INT, nullptr);
+    }
+
     Plane::Plane(int gridSizeX, int gridSizeZ, float spacing) : size(glm::vec3(gridSizeX, 1.0f, gridSizeZ)), position(0.0f)
     {
         GeneratePlane(planeMesh, gridSizeX, gridSizeZ, spacing);

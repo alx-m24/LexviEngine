@@ -22,6 +22,8 @@ namespace Lexvi {
     void SetupPlaneBuffers(PlaneMesh& plane);
     void GeneratePlane(PlaneMesh& plane, int gridSizeX, int gridSizeZ, float spacing = 1.0f);
 
+    void DrawPlaneMesh(PlaneMesh& plane);
+
     class Plane : public IRenderable {
     private:
         PlaneMesh planeMesh;

@@ -203,6 +203,56 @@ namespace Lexvi {
         return depthMap;
     }
 
+    std::vector<unsigned char> getRawTexturePixels(std::string path)
+    {
+        std::vector<unsigned char> pixels;
+
+        int width, height, nrComponents;
+        unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
+        if (data)
+        {
+            const size_t pixelNum = static_cast<size_t>(width) * height;
+            pixels.resize(pixelNum * nrComponents);
+
+            std::memcpy(pixels.data(), data, pixels.size());
+
+
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Texture failed to load at path: " << path << std::endl;
+            stbi_image_free(data);
+        }
+
+        return pixels;
+    }
+
+    std::vector<unsigned char> getGreyScaleTexturePixels(std::string path)
+    {
+        std::vector<unsigned char> pixels;
+
+        int width, height, nrComponents;
+        unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 1);
+        if (data)
+        {
+            const size_t pixelNum = static_cast<size_t>(width) * height;
+            pixels.resize(pixelNum);
+
+            std::memcpy(pixels.data(), data, pixels.size());
+
+
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Texture failed to load at path: " << path << std::endl;
+            stbi_image_free(data);
+        }
+
+        return pixels;
+    }
+
     void CreateComputeTexture(Texture& tex, unsigned int width, unsigned int height)
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &tex.id);

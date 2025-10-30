@@ -28,6 +28,14 @@ namespace Lexvi {
 		ssbo.id = 0;
 	}
 
+	void ReadSSBO(const SSBO& ssbo, void* data) {
+		void* ptr = glMapNamedBufferRange(ssbo.id, 0, ssbo.size, GL_MAP_READ_BIT);
+		if (ptr) {
+			std::memcpy(data, ptr, ssbo.size);
+			glUnmapNamedBuffer(ssbo.id);
+		}
+	}
+
 	void BindSSBO(const SSBO& ssbo) {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo.bindingPoint, ssbo.id);
 	}
