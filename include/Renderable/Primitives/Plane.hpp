@@ -11,7 +11,7 @@ namespace Lexvi {
 
     struct PlaneMesh {
         std::vector<PlaneVertex> vertices;
-        std::vector<uint32_t> indices;
+        std::vector<uint16_t> indices;
         unsigned int VAO = 0, VBO = 0, EBO = 0;
         int gridSizeX = 0;
         int gridSizeZ = 0;

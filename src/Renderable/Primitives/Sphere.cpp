@@ -36,6 +36,6 @@ namespace Lexvi {
 	{
 		shader->use();
 		glBindVertexArray(sphereMesh.VAO);
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphereMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphereMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
 	}
 }

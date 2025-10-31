@@ -13,7 +13,7 @@ namespace Lexvi {
 
     struct QuadMesh {
         std::vector<QuadVertex> vertices;
-        std::vector<uint32_t> indices;
+        std::vector<uint16_t> indices;
         unsigned int VAO = 0, VBO = 0, EBO = 0;
 
         void Bind() const;

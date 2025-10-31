@@ -16,7 +16,7 @@ namespace Lexvi {
 
         glNamedBufferData(plane.VBO, sizeof(PlaneVertex) * plane.vertices.size(), plane.vertices.data(), GL_STATIC_DRAW);
 
-        glNamedBufferData(plane.EBO, sizeof(GLuint) * plane.indices.size(), plane.indices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(plane.EBO, sizeof(GLushort) * plane.indices.size(), plane.indices.data(), GL_STATIC_DRAW);
 
         glVertexArrayVertexBuffer(plane.VAO, 0, plane.VBO, 0, sizeof(PlaneVertex));
         glVertexArrayElementBuffer(plane.VAO, plane.EBO);
@@ -90,7 +90,7 @@ namespace Lexvi {
 
     void DrawPlaneMesh(PlaneMesh& plane) {
         glBindVertexArray(plane.VAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(plane.indices.size()), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(plane.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }
 
     Plane::Plane(int gridSizeX, int gridSizeZ, float spacing) : size(glm::vec3(gridSizeX, 1.0f, gridSizeZ)), position(0.0f)
@@ -102,7 +102,7 @@ namespace Lexvi {
     {
         shader->use();
         glBindVertexArray(planeMesh.VAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(planeMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(planeMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }
 
     void Plane::setTransforms(const glm::mat4& mat)

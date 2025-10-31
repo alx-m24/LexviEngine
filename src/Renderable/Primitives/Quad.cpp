@@ -15,7 +15,7 @@ namespace Lexvi {
         glCreateBuffers(1, &quad.EBO);
 
         glNamedBufferData(quad.VBO, sizeof(QuadVertex) * quad.vertices.size(), quad.vertices.data(), GL_STATIC_DRAW);
-        glNamedBufferData(quad.EBO, sizeof(GLuint) * quad.indices.size(), quad.indices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(quad.EBO, sizeof(GLushort) * quad.indices.size(), quad.indices.data(), GL_STATIC_DRAW);
 
         glVertexArrayVertexBuffer(quad.VAO, 0, quad.VBO, 0, sizeof(QuadVertex));
         glVertexArrayElementBuffer(quad.VAO, quad.EBO);
@@ -56,7 +56,7 @@ namespace Lexvi {
     void Quad::Draw(const Shader* shader) {
         shader->use();
         glBindVertexArray(quadMesh.VAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(quadMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(quadMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }
 
     void Quad::setTransforms(const glm::mat4& mat) {

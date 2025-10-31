@@ -48,7 +48,7 @@ namespace Lexvi {
         glCreateBuffers(1, &mesh.EBO);
 
         glNamedBufferData(mesh.VBO, mesh.vertices.size() * sizeof(SemiCircleVertex), mesh.vertices.data(), GL_STATIC_DRAW);
-        glNamedBufferData(mesh.EBO, mesh.indices.size() * sizeof(unsigned int), mesh.indices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(mesh.EBO, mesh.indices.size() * sizeof(GLushort), mesh.indices.data(), GL_STATIC_DRAW);
 
         glVertexArrayVertexBuffer(mesh.VAO, 0, mesh.VBO, 0, sizeof(SemiCircleVertex));
         glVertexArrayElementBuffer(mesh.VAO, mesh.EBO);
@@ -68,10 +68,10 @@ namespace Lexvi {
         glBindVertexArray(mesh.VAO);
 
         if (instanceCount > 1) {
-            glDrawElementsInstanced(GL_TRIANGLES,  static_cast<GLsizei>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(instanceCount));
+            glDrawElementsInstanced(GL_TRIANGLES,  static_cast<GLsizei>(mesh.indices.size()), GL_UNSIGNED_SHORT, nullptr, static_cast<GLsizei>(instanceCount));
         }
         else {
-            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
         }
     }
 

@@ -194,7 +194,7 @@ namespace Lexvi {
 					count++;
 				}
 
-				size_t ssboIndex = pendingUpdates[start];
+				uint32_t ssboIndex = static_cast<uint32_t>(pendingUpdates[start]);
 
 				UpdateSSBO(allSubInstancesSSBO, &allSubInstances[ssboIndex], count * sizeof(SubInstanceDataGPU), ssboIndex * sizeof(SubInstanceDataGPU));
 

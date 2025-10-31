@@ -64,7 +64,7 @@ namespace Lexvi {
 
         glNamedBufferData(mesh.VBO, mesh.vertices.size() * sizeof(CylinderVertex), mesh.vertices.data(), GL_STATIC_DRAW);
 
-        glNamedBufferData(mesh.EBO, mesh.indices.size() * sizeof(unsigned int), mesh.indices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(mesh.EBO, mesh.indices.size() * sizeof(GLushort), mesh.indices.data(), GL_STATIC_DRAW);
 
         glVertexArrayVertexBuffer(mesh.VAO, 0, mesh.VBO, 0, sizeof(CylinderVertex));
         glVertexArrayElementBuffer(mesh.VAO, mesh.EBO);
@@ -88,7 +88,7 @@ namespace Lexvi {
     {
         shader->use();
         glBindVertexArray(cylinderMesh.VAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cylinderMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cylinderMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }
 
     void Cylinder::updateBoundingBox()

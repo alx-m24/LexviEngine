@@ -10,7 +10,7 @@ namespace Lexvi {
 
     struct CylinderMesh {
         std::vector<CylinderVertex> vertices;
-        std::vector<unsigned int> indices;
+        std::vector<uint16_t> indices;
         unsigned int VAO = 0, VBO = 0, EBO = 0;
     };
 
