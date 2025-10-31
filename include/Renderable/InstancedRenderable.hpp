@@ -319,7 +319,7 @@ namespace Lexvi {
 			shader->use();
 			glBindVertexArray(baseMesh.VAO);
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectBuffer.id);
-			glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr);
+			glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_SHORT, nullptr);
 		}
 	};
 }
