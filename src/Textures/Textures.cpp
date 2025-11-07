@@ -5,6 +5,84 @@
 namespace fs = std::filesystem;
 
 namespace Lexvi {
+    unsigned int loadTextureArray(const std::vector<std::string>& paths)
+    {
+        if (paths.empty()) {
+            std::cerr << "No texture paths provided for texture array.\n";
+            return 0;
+        }
+
+        int width = 0, height = 0, nrComponents = 0;
+        unsigned char* data = stbi_load(paths[0].c_str(), &width, &height, &nrComponents, 0);
+        if (!data) {
+            std::cerr << "Failed to load first texture: " << paths[0] << std::endl;
+            std::cerr << "stbi_load failed: " << stbi_failure_reason() << std::endl;
+            return 0;
+        }
+
+        GLenum format = GL_RGB;
+        GLenum internalFormat = GL_SRGB;
+        if (nrComponents == 1) {
+            format = GL_RED;
+            internalFormat = GL_RED;
+        }
+        else if (nrComponents == 3) {
+            format = GL_RGB;
+            internalFormat = GL_SRGB;
+        }
+        else if (nrComponents == 4) {
+            format = GL_RGBA;
+            internalFormat = GL_SRGB_ALPHA;
+        }
+
+        const int layers = static_cast<int>(paths.size());
+
+        // Create the texture array
+        GLuint textureID;
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &textureID);
+        glTextureStorage3D(textureID, 1, internalFormat, width, height, layers);
+
+        // Upload the first layer
+        glTextureSubImage3D(textureID, 0, 0, 0, 0, width, height, 1, format, GL_UNSIGNED_BYTE, data);
+        stbi_image_free(data);
+
+        // Upload the rest of the layers
+        for (int i = 1; i < layers; ++i)
+        {
+            int w, h, comps;
+            unsigned char* layerData = stbi_load(paths[i].c_str(), &w, &h, &comps, 0);
+            if (!layerData) {
+                std::cerr << "Failed to load texture: " << paths[i] << std::endl;
+                continue;
+            }
+
+            if (w != width || h != height) {
+                std::cerr << "Texture " << paths[i] << " size mismatch, skipping.\n";
+                stbi_image_free(layerData);
+                continue;
+            }
+
+            if (comps != nrComponents) {
+                std::cerr << "Texture " << paths[i] << " channel mismatch, skipping.\n";
+                stbi_image_free(layerData);
+                continue;
+            }
+
+            glTextureSubImage3D(textureID, 0, 0, 0, i, width, height, 1, format, GL_UNSIGNED_BYTE, layerData);
+            stbi_image_free(layerData);
+        }
+
+        // Set texture parameters
+        glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glGenerateTextureMipmap(textureID);
+
+        return textureID;
+    }
+
 
     unsigned int loadTexture(std::string path)
     {
@@ -155,6 +233,7 @@ namespace Lexvi {
         stbi_image_free(image);
         return textureID;
     }
+
     unsigned int TextureFromRawPixels(aiTexel* pixels, int width, int height) {
         // aiTexel is always 4 bytes: BGRA (0-255)
         std::vector<unsigned char> data(width * height * 4);

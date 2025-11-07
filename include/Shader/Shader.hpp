@@ -25,6 +25,7 @@ namespace Lexvi {
         void setFloat(const std::string& name, float value) const;
         void setVec2(const std::string& name, const glm::vec2& value) const;
         void setVec2(const std::string& name, float x, float y) const;
+        void setiVec2(const std::string& name, const glm::ivec2& value) const;
         void setVec3(const std::string& name, const glm::vec3& value) const;
         void setiVec3(const std::string& name, const glm::ivec3& value) const;
         void setVec3(const std::string& name, float x, float y, float z) const;

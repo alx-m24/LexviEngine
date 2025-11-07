@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="src\Renderable\Primitives\SemiCircle.cpp" />
     <ClCompile Include="src\stb_impl\stb_impl.cpp" />
+    <ClCompile Include="src\Systems\Systems.cpp" />
     <ClCompile Include="src\Utils\SSBO.cpp" />
     <ClCompile Include="src\Utils\UBO.cpp" />
     <ClInclude Include="include\Camera\Camera.hpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="include\Shader\ComputeShader.hpp" />
     <ClInclude Include="include\Shader\Shader.hpp" />
     <ClInclude Include="include\pch.h" />
+    <ClInclude Include="include\Systems\Systems.hpp" />
     <ClInclude Include="include\Textures\Textures.hpp" />
     <ClInclude Include="include\Utils\FrameBuffer.hpp" />
     <ClInclude Include="include\Utils\Hash.hpp" />

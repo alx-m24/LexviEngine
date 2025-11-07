@@ -11,6 +11,8 @@ namespace Lexvi {
         std::string path;
     };
 
+    unsigned int loadTextureArray(const std::vector<std::string>& paths);
+
     unsigned int loadTexture(std::string path);
     unsigned int TextureFromFile(const char* path, const std::string& directory);
     unsigned int TextureFromMemory(const unsigned char* data, size_t size);

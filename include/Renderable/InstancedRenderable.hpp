@@ -72,7 +72,7 @@ namespace Lexvi {
 		UBO frustumUBO;
 
 		std::shared_ptr<ComputeShader> cullShader;
-		std::shared_ptr<Camera> camera;
+		Camera* camera;
 
 	private:
 		MeshType baseMesh;
@@ -92,7 +92,7 @@ namespace Lexvi {
 			InitSystem();
 		}
 
-		inline void SetCurrentCamera(std::shared_ptr<Camera> cam) {
+		inline void SetCurrentCamera(Camera* cam) {
 			camera = cam;
 		}
 	private:
