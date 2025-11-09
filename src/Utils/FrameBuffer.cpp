@@ -91,7 +91,7 @@ namespace Lexvi {
         if (attachments & DEPTH) {
             Texture depthTex;
 
-            depthTex.id = GenerateDepthTexture(width, height);
+            depthTex = GenerateDepthTexture(width, height);
 
             glNamedFramebufferTexture(fbo, GL_DEPTH_ATTACHMENT, depthTex.id, 0);
             attachedTextures["DEPTH"] = std::move(depthTex);

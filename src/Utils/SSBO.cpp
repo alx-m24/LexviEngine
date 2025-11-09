@@ -47,6 +47,6 @@ namespace Lexvi {
 
 	void MemoryShaderImageBarrier()
 	{
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 	}
 }
