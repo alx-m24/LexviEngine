@@ -125,7 +125,7 @@ void Engine::run()
 
 		if (currentCamera) currentCamera->update(dt);
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderer->ClearBuffers();
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
