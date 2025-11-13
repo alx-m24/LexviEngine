@@ -152,6 +152,7 @@
     <ClCompile Include="src\Renderable\Primitives\SemiCircle.cpp" />
     <ClCompile Include="src\stb_impl\stb_impl.cpp" />
     <ClCompile Include="src\Systems\Systems.cpp" />
+    <ClCompile Include="src\Utils\Logging.cpp" />
     <ClCompile Include="src\Utils\SSBO.cpp" />
     <ClCompile Include="src\Utils\UBO.cpp" />
     <ClInclude Include="include\Camera\Camera.hpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="include\Utils\FrameBuffer.hpp" />
     <ClInclude Include="include\Utils\Hash.hpp" />
     <ClInclude Include="include\Utils\IndirectBuffer.hpp" />
+    <ClInclude Include="include\Utils\Logging.hpp" />
     <ClInclude Include="include\Utils\Random.hpp" />
     <ClInclude Include="include\Utils\snoise.hpp" />
     <ClCompile Include="src\Renderable\Primitives\Cylinder.cpp" />

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <atomic>
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
@@ -43,14 +42,19 @@ namespace Lexvi {
 	private:
 		FrameTimers frameTimers;
 
+		std::chrono::duration<double> TARGET_FRAME_DURATION;
+
+		bool PerformanceUI = true;
+		int FPS_LIMIT = 0;
+
 	public:
 		Engine() = default;
-		Engine(const std::string& title, std::unique_ptr<Game> newGame) { Init(title, std::move(newGame)); };
+		Engine(const std::string& title, std::unique_ptr<Game> newGame, bool VSYNC = false, bool PerformanceUI = true, int FPS_LIMIT = 0) { Init(title, std::move(newGame), VSYNC, PerformanceUI, FPS_LIMIT); };
 
 		~Engine();
 
 	public:
-		void Init(const std::string& title, std::unique_ptr<Game> newGame);
+		void Init(const std::string& title, std::unique_ptr<Game> newGame, bool VSYNC = false, bool PerformanceUI = true, int FPS_LIMIT = 0);
 
 	public:
 		void run();
@@ -63,6 +67,8 @@ namespace Lexvi {
 		void ToggleCursorState();
 		std::shared_ptr<Input> getInputSystem() const;
 		std::shared_ptr<Renderer> getRenderer() const;
+
+		void LockFPS(int FPS);
 
 	private:
 		void ShowEngineStats(float allocatedMB);

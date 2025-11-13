@@ -35,8 +35,13 @@ Lexvi::Engine::~Engine()
 	}
 }
 
-void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame)
+void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame, bool VSYNC, bool PerformanceUI, int FPS_LIMIT)
 {
+
+	this->PerformanceUI = PerformanceUI;
+
+	this->FPS_LIMIT = FPS_LIMIT;
+	this->LockFPS(FPS_LIMIT);
 
 	// if game already define -> setup/init already called
 	if (game && window) return;
@@ -62,7 +67,7 @@ void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame)
 		return;
 	}
 	glfwMakeContextCurrent(window);
-	// glfwSwapInterval(1);
+	glfwSwapInterval((int)VSYNC);
 
 	glfwSetWindowUserPointer(window, inputSystem.get());
 	glfwSetKeyCallback(window, Lexvi::Input::keyCallback);
@@ -113,8 +118,11 @@ void Engine::run()
 
 	game->loadResources(*this);
 
+	using clock = std::chrono::high_resolution_clock;
+
 	float lastFrameTime = static_cast<float>(glfwGetTime());
 	while (!glfwWindowShouldClose(window)) {
+		auto frameStart = clock::now();
 		float frameTime = static_cast<float>(glfwGetTime());
 		float dt = frameTime - lastFrameTime;
 		lastFrameTime = frameTime;
@@ -133,17 +141,33 @@ void Engine::run()
 
 		game->render(*renderer);
 
+		if (PerformanceUI) {
 #ifdef _DEBUG
-		float allocatedMB = g_allocatedBytes.load() / 1'000'000.0f;
-		ShowEngineStats(allocatedMB);
+			float allocatedMB = g_allocatedBytes.load() / 1'000'000.0f;
+			ShowEngineStats(allocatedMB);
 #else
-		ShowEngineStats(0.0f);
+			ShowEngineStats(0.0f);
 #endif
+		}
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
+
+		if (FPS_LIMIT > 0) {
+			auto frameEnd = clock::now();
+			auto frameDuration = frameEnd - frameStart;
+
+			auto sleepTime = TARGET_FRAME_DURATION - frameDuration;
+			if (sleepTime > std::chrono::duration<double>(0)) {
+				std::this_thread::sleep_for(sleepTime);
+			}
+
+			// busy-wait a few microseconds for more precise timing
+			while ((clock::now() - frameStart) < TARGET_FRAME_DURATION) {}
+		}
+
 	}
 
 	game->shutdown();
@@ -178,6 +202,12 @@ std::shared_ptr<Input> Lexvi::Engine::getInputSystem() const
 std::shared_ptr<Renderer> Lexvi::Engine::getRenderer() const
 {
 	return std::shared_ptr<Renderer>(renderer);
+}
+
+void  Lexvi::Engine::LockFPS(int FPS) {
+	this->FPS_LIMIT = FPS;
+
+	TARGET_FRAME_DURATION = std::chrono::duration<double>(1.0 / FPS_LIMIT);
 }
 
 void Lexvi::Engine::ShowEngineStats(float allocatedMB)

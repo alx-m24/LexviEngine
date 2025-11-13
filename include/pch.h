@@ -15,6 +15,7 @@
 #include <assimp/scene.h>
 #include <atomic>
 #include <array>
+#include <chrono>
 #include <implot.h>
 #include <filesystem>
 #include <fstream>
@@ -30,6 +31,7 @@
 #include <iostream>
 #include <memory>
 #include <numbers>
+#include <thread>
 #include <random>
 #include <sstream>
 #include <stb_image.h>
