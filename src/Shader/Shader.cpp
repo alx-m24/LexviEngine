@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "Utils/Logging.hpp"
+
 #include "Shader/Shader.hpp"
 
 using namespace Lexvi;
@@ -44,7 +46,7 @@ Shader::Shader(std::string vertexSrc, std::string fragmentSrc, std::string geome
         }
         catch (std::ifstream::failure& e)
         {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+            LEXVI_LOG_ERROR("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " + std::string(e.what()));
         }
     }
     const char* vShaderCode = vertexCode.c_str();
@@ -95,13 +97,17 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
 {
     int success;
     char infoLog[1024];
+
     if (type != "PROGRAM")
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
         {
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+            LEXVI_LOG_ERROR(
+                "SHADER_COMPILATION_ERROR of type: " + type + "\n" +
+                std::string(infoLog) + "\n -- --------------------------------------------------- -- "
+            );
         }
     }
     else
@@ -109,8 +115,11 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
         {
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+            LEXVI_LOG_ERROR(
+                "PROGRAM_LINKING_ERROR of type: " + type + "\n" +
+                std::string(infoLog) + "\n -- --------------------------------------------------- -- "
+            );
         }
     }
 }

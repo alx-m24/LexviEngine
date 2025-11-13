@@ -2,6 +2,8 @@
 
 #include "Shader/ComputeShader.hpp"
 
+#include "Utils/Logging.hpp"
+
 using namespace Lexvi;
 
 ComputeShader::ComputeShader(std::string src, bool isFromFile)
@@ -25,7 +27,7 @@ ComputeShader::ComputeShader(std::string src, bool isFromFile)
         }
         catch (std::ifstream::failure& e)
         {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+            LEXVI_LOG_ERROR("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " + std::string(e.what()));
         }
     }
     const char* ShaderCode = shaderCode.c_str();
@@ -50,13 +52,17 @@ void ComputeShader::checkCompileErrors(unsigned int shader, std::string type)
 {
     int success;
     char infoLog[1024];
+
     if (type != "PROGRAM")
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success)
         {
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+            LEXVI_LOG_ERROR(
+                "SHADER_COMPILATION_ERROR of type: " + type + "\n" +
+                std::string(infoLog) + "\n -- --------------------------------------------------- -- "
+            );
         }
     }
     else
@@ -64,11 +70,15 @@ void ComputeShader::checkCompileErrors(unsigned int shader, std::string type)
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success)
         {
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+            LEXVI_LOG_ERROR(
+                "PROGRAM_LINKING_ERROR of type: " + type + "\n" +
+                std::string(infoLog) + "\n -- --------------------------------------------------- -- "
+            );
         }
     }
 }
+
 
 void ComputeShader::setBool(const std::string& name, bool value) const
 {

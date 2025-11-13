@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "Utils/Logging.hpp"
+
 #include "Renderable/Primitives/Cylinder.hpp"
 
 namespace Lexvi {
@@ -111,7 +113,7 @@ namespace Lexvi {
 
     bool Cylinder::isVisible(const Camera& camera) const
     {
-        std::cout << "implement culling for cylinder";
+        LEXVI_LOG_ERROR("implement culling for cylinder");
         return true;
     }
 }

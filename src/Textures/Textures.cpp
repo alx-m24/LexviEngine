@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "Utils/Logging.hpp"
+
 #include "Textures/Textures.hpp"
 
 namespace fs = std::filesystem;
@@ -43,14 +45,14 @@ namespace Lexvi {
         Texture tex;
 
         if (paths.empty()) {
-            std::cerr << "No texture paths provided for texture array.\n";
+            LEXVI_LOG_ERROR("No texture paths provided for texture array");
             return tex;
         }
 
         int width = 0, height = 0, nrComponents = 0;
         unsigned char* data = stbi_load(paths[0].c_str(), &width, &height, &nrComponents, 0);
         if (!data) {
-            std::cerr << "Failed to load first texture: " << paths[0] << "\n";
+            LEXVI_LOG_ERROR("Failed to load first texture: " + paths[0]);
             return tex;
         }
 
@@ -89,7 +91,7 @@ namespace Lexvi {
         int width, height, nrComponents;
         unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
         if (!data) {
-            std::cerr << "Texture failed to load at path: " << path << "\n";
+            LEXVI_LOG_ERROR("Texture failed to load at path: " + path);
             return tex;
         }
 
@@ -123,7 +125,7 @@ namespace Lexvi {
         int width, height, nrComponents;
         unsigned char* img = stbi_load_from_memory(data, static_cast<int>(size), &width, &height, &nrComponents, 0);
         if (!img) {
-            std::cerr << "Failed to load texture from memory\n";
+            LEXVI_LOG_ERROR("Failed to load texture from memory");
             return tex;
         }
 
@@ -209,7 +211,7 @@ namespace Lexvi {
         }
         else
         {
-            std::cout << "Texture failed to load at path: " << path << std::endl;
+            LEXVI_LOG_ERROR("Texture failed to load at path: " + path);
             stbi_image_free(data);
         }
 
@@ -234,7 +236,7 @@ namespace Lexvi {
         }
         else
         {
-            std::cout << "Texture failed to load at path: " << path << std::endl;
+            LEXVI_LOG_ERROR("Texture failed to load at path: " + path);
             stbi_image_free(data);
         }
 
