@@ -1,18 +1,20 @@
 #pragma once
 
+
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
 #include <chrono>
 
-class Game;       // forward declare
-// Forward declare GLFWwindow so we don't include glfw3.h here
-struct GLFWwindow;
+#include <GLFW/glfw3.h>
+
+#include <Game/Game.hpp>
+#include <Input/Input.hpp>
+#include <Renderer/Renderer.hpp>
 
 #ifdef _DEBUG
 static std::atomic<size_t> g_allocatedBytes = 0;
 #endif
-
 
 struct FrameTimers {
 	float inputTime = 0.0f;
@@ -23,26 +25,22 @@ struct FrameTimers {
 };
 
 namespace Lexvi {
-	class Camera;     // forward declare
-	class Input;      // forward declare
-	class Renderer;   // forward declare
-
 	class Engine
 	{
 	private:
 		std::unique_ptr<Game> game;
-		std::shared_ptr<Camera> currentCamera;
+		Camera* currentCamera; // game own's camera
 
 	private:
 		GLFWwindow* window = nullptr;
-		std::shared_ptr<Input> inputSystem;
 
-		std::shared_ptr<Renderer> renderer;
+		std::unique_ptr<Input> inputSystem;
+		std::unique_ptr<Renderer> renderer;
 
 	private:
 		FrameTimers frameTimers;
 
-		std::chrono::duration<double> TARGET_FRAME_DURATION;
+		std::chrono::duration<double> TARGET_FRAME_DURATION{};
 
 		bool PerformanceUI = true;
 		int FPS_LIMIT = 0;
@@ -60,13 +58,13 @@ namespace Lexvi {
 		void run();
 
 	public:
-		void SetCurrentCamera(std::shared_ptr<Camera> camera);
+		void SetCurrentCamera(Camera* camera);
 		void SetBackGroundColor(glm::vec3 color);
 		void LockAndHideCursor();
 		void ShowCursor();
 		void ToggleCursorState();
-		std::shared_ptr<Input> getInputSystem() const;
-		std::shared_ptr<Renderer> getRenderer() const;
+		Input* getInputSystem() const;
+		Renderer* getRenderer() const;
 
 		void LockFPS(int FPS);
 

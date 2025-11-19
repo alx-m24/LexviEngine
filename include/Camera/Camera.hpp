@@ -64,7 +64,7 @@ namespace Lexvi {
         CameraFrustum frustum{};
         CameraData cameraData{};
 
-        std::shared_ptr<Input> inputSystem = nullptr;
+        Input* inputSystem = nullptr;
 
     protected:
         virtual void updateMatricesAndFrustum();
@@ -94,6 +94,6 @@ namespace Lexvi {
         const CameraData& getCameraData() const{ return cameraData; };
 
     public:
-        void SetInputSystem(std::shared_ptr<Input> inputSys);
+        void SetInputSystem(Input* inputSys);
     };
 }

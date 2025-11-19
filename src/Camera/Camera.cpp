@@ -132,9 +132,9 @@ CameraFrustum Lexvi::Camera::getFrustum() const
     return frustum;
 }
 
-void Lexvi::Camera::SetInputSystem(std::shared_ptr<Input> inputSys)
+void Lexvi::Camera::SetInputSystem(Input* inputSys)
 {
-    inputSystem = std::move(inputSys);;
+    inputSystem = inputSys;
 }
 
 float Lexvi::Camera::getAspectRatio() const

@@ -106,7 +106,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCPKG_STATIC_LINK;IMGUI_IMPL_OPENGL_LOADER_GLAD</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VCPKG_STATIC_LINK;GLFW_INCLUDE_NONE;IMGUI_IMPL_OPENGL_LOADER_GLAD</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCPKG_STATIC_LINK;IMGUI_IMPL_OPENGL_LOADER_GLAD</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VCPKG_STATIC_LINK;GLFW_INCLUDE_NONE;IMGUI_IMPL_OPENGL_LOADER_GLAD</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>

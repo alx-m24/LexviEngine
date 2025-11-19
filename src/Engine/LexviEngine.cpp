@@ -7,8 +7,6 @@
 #include "Camera/Camera.hpp"
 #include "Renderer/Renderer.hpp"
 
-#include <GLFW/glfw3.h>
-
 #ifdef _DEBUG
 void* operator new(std::size_t sz) {
 	g_allocatedBytes += sz;
@@ -37,7 +35,6 @@ Lexvi::Engine::~Engine()
 
 void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame, bool VSYNC, bool PerformanceUI, int FPS_LIMIT)
 {
-
 	this->PerformanceUI = PerformanceUI;
 
 	this->FPS_LIMIT = FPS_LIMIT;
@@ -49,8 +46,8 @@ void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame, bool 
 	// move ownership of game to engine
 	game = std::move(newGame);
 
-	inputSystem = std::make_shared<Input>();
-	renderer = std::make_shared<Renderer>();
+	inputSystem = std::make_unique<Input>();
+	renderer = std::make_unique<Renderer>();
 
 	if (!glfwInit()) {
 		throw std::runtime_error("Failed to initialize GLFW");
@@ -179,14 +176,14 @@ void Engine::run()
 	window = nullptr;
 }
 
-void Lexvi::Engine::SetCurrentCamera(std::shared_ptr<Camera> camera)
+void Lexvi::Engine::SetCurrentCamera(Camera* camera)
 {
 	if (!camera) {
 		return;
 	}
 
-	camera->SetInputSystem(inputSystem);
-	currentCamera = std::move(camera);
+	camera->SetInputSystem(inputSystem.get());
+	currentCamera = camera;
 }
 
 void Lexvi::Engine::SetBackGroundColor(glm::vec3 color)
@@ -194,14 +191,14 @@ void Lexvi::Engine::SetBackGroundColor(glm::vec3 color)
 	glClearColor(color.r, color.g, color.b, 1.0f);
 }
 
-std::shared_ptr<Input> Lexvi::Engine::getInputSystem() const
+Input* Lexvi::Engine::getInputSystem() const
 {
-	return std::shared_ptr<Input>(inputSystem);
+	return inputSystem.get();
 }
 
-std::shared_ptr<Renderer> Lexvi::Engine::getRenderer() const
+Renderer* Lexvi::Engine::getRenderer() const
 {
-	return std::shared_ptr<Renderer>(renderer);
+	return renderer.get();
 }
 
 void  Lexvi::Engine::LockFPS(int FPS) {

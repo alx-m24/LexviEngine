@@ -71,7 +71,7 @@ namespace Lexvi {
 		SSBO indirectBuffer;
 		UBO frustumUBO;
 
-		std::shared_ptr<ComputeShader> cullShader;
+		ComputeShader* cullShader;
 		Camera* camera;
 
 	private:
@@ -86,7 +86,7 @@ namespace Lexvi {
 		DrawElementsIndirectCommand drawCmd = {};
 
 	public:
-		InstanceSystem(std::function<void(MeshType&)> genMesh, std::shared_ptr<ComputeShader> cullShader)
+		InstanceSystem(std::function<void(MeshType&)> genMesh, ComputeShader* cullShader)
 			: generateMeshFunc(genMesh), cullShader(cullShader)
 		{
 			InitSystem();
