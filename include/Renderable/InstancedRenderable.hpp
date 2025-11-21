@@ -11,6 +11,7 @@
 #include "IRenderable/IRenderable.hpp"
 #include "Utils/IndirectBuffer.hpp"
 #include "Shader/ComputeShader.hpp"
+#include "Bindable/Bindable.hpp"
 #include "Shader/Shader.hpp"
 #include "Camera/Camera.hpp"
 #include "Utils/UBO.hpp"
@@ -289,37 +290,44 @@ namespace Lexvi {
 			glm::vec4 frustumPlanes[6];
 			GetFrustumPlanesVec4(camera->getFrustum(), frustumPlanes);
 
-			cullShader->use();
-			cullShader->setUint("InstanceCount", static_cast<uint32_t>(allSubInstances.size()));
-			cullShader->setVec3("cameraPos", camera->getPosition());
-			cullShader->setFloat("maxDistance", camera->getZNearAndZFar().y);
+			{
+				SmartBind cullBind(*cullShader);
 
-			UpdateUBO(frustumUBO, frustumPlanes, sizeof(glm::vec4) * 6, 0);
+				cullShader->setUint("InstanceCount", static_cast<uint32_t>(allSubInstances.size()));
+				cullShader->setVec3("cameraPos", camera->getPosition());
+				cullShader->setFloat("maxDistance", camera->getZNearAndZFar().y);
 
-			uint32_t threadsPerGroupX = 32; // match shader local_size_x
-			uint32_t threadsPerGroupY = 32; // match shader local_size_y
-			uint32_t threadsPerGroupZ = 1;  // match shader local_size_z
+				UpdateUBO(frustumUBO, frustumPlanes, sizeof(glm::vec4) * 6, 0);
 
-			uint32_t totalThreads = static_cast<uint32_t>(allSubInstances.size());
+				uint32_t threadsPerGroupX = 32; // match shader local_size_x
+				uint32_t threadsPerGroupY = 32; // match shader local_size_y
+				uint32_t threadsPerGroupZ = 1;  // match shader local_size_z
 
-			if (totalThreads == 0) return;
+				uint32_t totalThreads = static_cast<uint32_t>(allSubInstances.size());
 
-			// Total groups needed to cover all threads
-			uint32_t totalGroups = (totalThreads + threadsPerGroupX * threadsPerGroupY * threadsPerGroupZ - 1)
-				/ (threadsPerGroupX * threadsPerGroupY * threadsPerGroupZ);
+				if (totalThreads == 0) return;
 
-			// Try to divide groups into 3D grid
-			uint32_t groupsX = std::min(static_cast<uint32_t>(maxX), totalGroups);
-			uint32_t groupsY = std::min(static_cast<uint32_t>(maxY), (totalGroups + groupsX - 1) / groupsX);
-			uint32_t groupsZ = std::min(static_cast<uint32_t>(maxZ), (totalGroups + groupsX * groupsY - 1) / (groupsX * groupsY));
+				// Total groups needed to cover all threads
+				uint32_t totalGroups = (totalThreads + threadsPerGroupX * threadsPerGroupY * threadsPerGroupZ - 1)
+					/ (threadsPerGroupX * threadsPerGroupY * threadsPerGroupZ);
 
-			glDispatchCompute(groupsX, groupsY, groupsZ);
-			glMemoryBarrier(GL_COMMAND_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+				// Try to divide groups into 3D grid
+				uint32_t groupsX = std::min(static_cast<uint32_t>(maxX), totalGroups);
+				uint32_t groupsY = std::min(static_cast<uint32_t>(maxY), (totalGroups + groupsX - 1) / groupsX);
+				uint32_t groupsZ = std::min(static_cast<uint32_t>(maxZ), (totalGroups + groupsX * groupsY - 1) / (groupsX * groupsY));
 
-			shader->use();
-			glBindVertexArray(baseMesh.VAO);
-			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectBuffer.id);
-			glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_SHORT, nullptr);
+
+				cullShader->Dispatch(glm::uvec3(groupsX, groupsY, groupsZ));
+				glMemoryBarrier(GL_COMMAND_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+			}
+
+			{
+				SmartBind shaderBind(*shader);
+
+				glBindVertexArray(baseMesh.VAO);
+				glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectBuffer.id);
+				glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_SHORT, nullptr);
+			}
 		}
 	};
 }

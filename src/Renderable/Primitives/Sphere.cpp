@@ -34,7 +34,8 @@ namespace Lexvi {
 
 	void Sphere::Draw(const Shader* shader)
 	{
-		shader->use();
+		SmartBind shaderBind(*shader);
+
 		glBindVertexArray(sphereMesh.VAO);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphereMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
 	}

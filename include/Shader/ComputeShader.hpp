@@ -1,19 +1,21 @@
 #pragma once
 
+#include "Bindable/Bindable.hpp"
+
 namespace Lexvi {
-    class ComputeShader
-    {
+	class ComputeShader : public Bindable {
     public:
         ComputeShader() = default;
         ComputeShader(std::string src, bool isFromFile = true);
 
-        void use() const;
+		void Bind() const override;
+		void Unbind() const override;
 
     private:
         void checkCompileErrors(unsigned int shader, std::string type);
 
     public:
-        unsigned int ID;
+        unsigned int ID = 0;
 
     public:
         void setBool(const std::string& name, bool value) const;

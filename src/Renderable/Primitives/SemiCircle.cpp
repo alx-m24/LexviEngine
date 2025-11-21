@@ -64,7 +64,8 @@ namespace Lexvi {
     }
 
     void DrawSemiCircleMesh(SemiCircleMesh& mesh, Shader& shader, uint32_t instanceCount) {
-        shader.use();
+		SmartBind shaderBind(shader);
+
         glBindVertexArray(mesh.VAO);
 
         if (instanceCount > 1) {

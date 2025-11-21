@@ -31,4 +31,5 @@ namespace Lexvi {
     void BindComputeTexture(Texture& tex, unsigned int id);
     void SaveComputeTexture(Texture& tex, std::string name, unsigned int width, unsigned int height);
     void BindTexture(unsigned int unit, unsigned int id);
+    void BindTexture(unsigned int unit, const Texture& texture);
 }

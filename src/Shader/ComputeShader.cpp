@@ -43,9 +43,14 @@ ComputeShader::ComputeShader(std::string src, bool isFromFile)
     checkCompileErrors(ID, "PROGRAM");
 }
 
-void ComputeShader::use() const
+void Lexvi::ComputeShader::Bind() const
 {
     glUseProgram(ID);
+}
+
+void Lexvi::ComputeShader::Unbind() const
+{
+    glUseProgram(0);
 }
 
 void ComputeShader::checkCompileErrors(unsigned int shader, std::string type)
@@ -152,6 +157,7 @@ void ComputeShader::setMat4(const std::string& name, const glm::mat4& mat) const
 
 void Lexvi::ComputeShader::Dispatch(glm::uvec3 groupNum) const
 {
-    this->use();
+	SmartBind bind(*this);
+
     glDispatchCompute(groupNum.x, groupNum.y, groupNum.z);
 }

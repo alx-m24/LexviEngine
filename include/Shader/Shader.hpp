@@ -3,10 +3,12 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#include "Bindable/Bindable.hpp"
+
 namespace Lexvi {
     uint64_t GetMaxThreadsPerDispatch(int localSizeX, int localSizeY, int localSizeZ);
 
-    class Shader {
+    class Shader : public Bindable {
     public:
         unsigned int ID = 0;
 
@@ -17,7 +19,8 @@ namespace Lexvi {
         Shader() = default;
         Shader(std::string vertexSrc, std::string fragmentSrc, std::string geometrySrc = "", bool isFromFile = true);
 
-        void use() const;
+		void Bind() const override;
+		void Unbind() const override;
     public:
         void setBool(const std::string& name, bool value) const;
         void setInt(const std::string& name, int value) const;

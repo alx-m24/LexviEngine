@@ -100,7 +100,8 @@ namespace Lexvi {
 
     void Plane::Draw(const Shader* shader)
     {
-        shader->use();
+		SmartBind shaderBind(*shader);
+
         glBindVertexArray(planeMesh.VAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(planeMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }

@@ -88,7 +88,8 @@ namespace Lexvi {
 
     void Cylinder::Draw(const Shader* shader)
     {
-        shader->use();
+		SmartBind shaderBind(*shader);
+
         glBindVertexArray(cylinderMesh.VAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cylinderMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }

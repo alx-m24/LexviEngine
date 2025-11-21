@@ -177,6 +177,11 @@ glm::mat4 Lexvi::Camera::getProjectionMatrix() const
     return projectionMatrix;
 }
 
+void Lexvi::Camera::SetFar(float far)
+{
+	this->zFar = far;
+}
+
 void Lexvi::Camera::updateVectors() {
     glm::vec3 f;
     f.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));

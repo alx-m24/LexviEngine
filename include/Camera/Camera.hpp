@@ -56,7 +56,7 @@ namespace Lexvi {
         float mouseSensitivity = 0.08f;
         float aspectRatio = 1.0f;
         float zNear = 0.1f;
-        float zFar = 100.0f;
+        float zFar = 220.0f;
 
         glm::mat4 viewMatrix{ 1.0f };
         glm::mat4 projectionMatrix{ 1.0f };
@@ -95,5 +95,6 @@ namespace Lexvi {
 
     public:
         void SetInputSystem(Input* inputSys);
+        void SetFar(float far);
     };
 }

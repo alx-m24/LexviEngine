@@ -16,7 +16,6 @@ private:
 	std::stack<std::unique_ptr<ISystem>> systems;
 
 public:
-public:
     template<typename T, typename... Args>
     T& PushSystem(Args&&... args) {
         auto system = std::make_unique<T>(std::forward<Args>(args)...);

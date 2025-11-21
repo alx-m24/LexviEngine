@@ -20,7 +20,8 @@ void Lexvi::Renderer::Draw(IRenderable& obj, const Camera& camera, const Shader*
 		return;
 	}
 
-	currentShader->use();
+	SmartBind shaderBind(*currentShader);
+
 	obj.Draw(currentShader);
 }
 
@@ -41,7 +42,8 @@ void Lexvi::Renderer::Draw(std::vector<IRenderable>& objects, const Camera& came
 		return;
 	}
 
-	currentShader->use();
+	SmartBind shaderBind(*currentShader);
+
 	for (auto& obj : objects) {
 		if (!obj.isVisible(camera)) continue;
 		currentShader->setMat4("model", obj.getTransforms());
@@ -64,6 +66,19 @@ void Lexvi::Renderer::SetBackFace(bool CW)
 	glFrontFace(CW ? GL_CCW : GL_CW);
 }
 
+void Lexvi::Renderer::SetFaceToCull(bool back)
+{
+	glCullFace(back ? GL_BACK : GL_FRONT);
+}
+
+void Lexvi::Renderer::EnableDepthTest() {
+	glEnable(GL_DEPTH_TEST);
+}
+
+void Lexvi::Renderer::DisableDepthTest() {
+	glDisable(GL_DEPTH_TEST);
+}
+
 void Lexvi::Renderer::ViewportSize(uint32_t offsetX, uint32_t offsetY, uint32_t width, uint32_t height)
 {
 	glViewport(offsetX, offsetY, width, height);
@@ -76,4 +91,15 @@ const Lexvi::Shader* Lexvi::Renderer::setCurrentShader(const Shader* shader) con
 
 void Lexvi::Renderer::ClearBuffers() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+}
+
+void Lexvi::Renderer::DisableBlend()
+{
+	glDisable(GL_BLEND);
+}
+
+void Lexvi::Renderer::EnableBlend()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

@@ -54,7 +54,8 @@ namespace Lexvi {
     }
 
     void Quad::Draw(const Shader* shader) {
-        shader->use();
+		SmartBind shaderBind(*shader);
+
         glBindVertexArray(quadMesh.VAO);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(quadMesh.indices.size()), GL_UNSIGNED_SHORT, nullptr);
     }

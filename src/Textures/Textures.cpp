@@ -313,4 +313,9 @@ namespace Lexvi {
         glBindTextureUnit(unit, id);
     }
 
+    void BindTexture(unsigned int unit, const Texture& texture)
+    {
+		BindTexture(unit, texture.id);
+    }
+
 }

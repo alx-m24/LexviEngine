@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Textures/Textures.hpp"
+#include "Bindable/Bindable.hpp"
 
 namespace Lexvi {
 	enum FrameBufferAttachments {
@@ -18,7 +19,7 @@ namespace Lexvi {
 
 	class Input;
 
-	class FrameBuffer {
+	class FrameBuffer : public Bindable {
 	private:
 		FrameBufferAttachments attachments = NONE;
 
@@ -83,13 +84,24 @@ namespace Lexvi {
 
 		void getFrameBufferSize(unsigned int& width, unsigned int& height) const;
 
-		void BindFrameBuffer() const;
-		void UnBindFrameBuffer() const;
+		void Bind() const override;
+		void Unbind() const override;
 
 		const Texture* getAttachment(FrameBufferAttachments attachment, unsigned int number = 0) const;
 
 	private:
 		void CreateFrameBuffer();
 		void DeleteFBO();
+
+	public:
+		struct SmartBind {
+		private:
+			int previousFBO = 0;
+
+		public:
+			SmartBind(const FrameBuffer& frameBuffer);
+			~SmartBind();
+		};
 	};
+
 }

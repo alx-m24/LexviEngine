@@ -83,13 +83,15 @@ void Engine::Init(const std::string& title, std::unique_ptr<Game> newGame, bool 
 
 	inputSystem->framebuffer_size_callback(window, inputSystem->getScreenWidth(), inputSystem->getScreenHeight());
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	bool backFaceCCW = true;
+	bool cullBackFaces = true;
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	renderer->EnableBackFaceCulling();
+	renderer->SetBackFace(backFaceCCW);
+	renderer->SetFaceToCull(cullBackFaces); // back faces
+
+	renderer->EnableBlend();
+	renderer->EnableDepthTest();
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

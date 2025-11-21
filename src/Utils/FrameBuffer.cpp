@@ -27,16 +27,15 @@ namespace Lexvi {
         height = this->height;
     }
 
-    void FrameBuffer::BindFrameBuffer() const
+    void FrameBuffer::Bind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
 
-    void FrameBuffer::UnBindFrameBuffer() const
+    void FrameBuffer::Unbind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-
 
     const Texture* FrameBuffer::getAttachment(FrameBufferAttachments attachment, unsigned int number) const
     {
@@ -153,5 +152,16 @@ namespace Lexvi {
         }
 
         return std::string();
+    }
+
+    FrameBuffer::SmartBind::SmartBind(const FrameBuffer& frameBuffer)
+    {
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFBO);
+
+		frameBuffer.Bind();
+    }
+    FrameBuffer::SmartBind::~SmartBind()
+    {
+		glBindFramebuffer(GL_FRAMEBUFFER, previousFBO);
     }
 }

@@ -88,11 +88,6 @@ Shader::Shader(std::string vertexSrc, std::string fragmentSrc, std::string geome
         glDeleteShader(geometry);
 }
 
-void Shader::use() const
-{
-    glUseProgram(ID);
-}
-
 void Shader::checkCompileErrors(unsigned int shader, std::string type)
 {
     int success;
@@ -122,6 +117,16 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
             );
         }
     }
+}
+
+void Lexvi::Shader::Bind() const
+{
+    glUseProgram(ID);
+}
+
+void Lexvi::Shader::Unbind() const
+{
+	glUseProgram(0);
 }
 
 void Shader::setBool(const std::string& name, bool value) const

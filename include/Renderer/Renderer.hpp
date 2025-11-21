@@ -23,10 +23,16 @@ namespace Lexvi {
 		void DisableBackFaceCulling();
 		void EnableBackFaceCulling();
 		void SetBackFace(bool CW);
+		void SetFaceToCull(bool back);
+
+		void EnableDepthTest();
+		void DisableDepthTest();
 
 		void ClearBuffers();
 
 		static void ViewportSize(uint32_t offsetX, uint32_t offsety, uint32_t width, uint32_t height);
+		static void DisableBlend();
+		static void EnableBlend();
 
 	private:
 		const Shader* setCurrentShader(const Shader* shader) const;

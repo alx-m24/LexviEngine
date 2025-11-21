@@ -29,7 +29,7 @@ namespace Lexvi {
 	{
 	private:
 		std::unique_ptr<Game> game;
-		Camera* currentCamera; // game own's camera
+		Camera* currentCamera = nullptr; // game own's camera
 
 	private:
 		GLFWwindow* window = nullptr;
