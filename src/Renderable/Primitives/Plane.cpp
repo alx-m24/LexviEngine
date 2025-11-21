@@ -115,9 +115,9 @@ namespace Lexvi {
         return glm::mat4(transforms);
     }
 
-    CameraAABB Plane::getBoundBox() const
+    AABB Plane::getBoundBox() const
     {
-        CameraAABB aabb{};
+        AABB aabb{};
 
         aabb.min = position - size / 2.0f;
         aabb.max = position + size / 2.0f;

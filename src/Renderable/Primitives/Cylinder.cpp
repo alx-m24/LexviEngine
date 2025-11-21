@@ -107,9 +107,9 @@ namespace Lexvi {
         return glm::mat4();
     }
 
-    CameraAABB Cylinder::getBoundBox() const
+    AABB Cylinder::getBoundBox() const
     {
-        return CameraAABB();
+        return AABB();
     }
 
     bool Cylinder::isVisible(const Camera& camera) const

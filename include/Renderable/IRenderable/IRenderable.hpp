@@ -7,7 +7,7 @@ namespace Lexvi {
 	class IRenderable {
 	protected:
 		glm::mat4 transforms = (1.0f);
-		CameraAABB cameraAABB = {};
+		AABB cameraAABB = {};
 
 	public:
 		virtual ~IRenderable() = default;
@@ -18,7 +18,7 @@ namespace Lexvi {
 
 		virtual void setTransforms(const glm::mat4& mat) { transforms = mat; }
 		virtual glm::mat4 getTransforms() const { return transforms; };
-		virtual CameraAABB getBoundBox() const { return cameraAABB; };
+		virtual AABB getBoundBox() const { return cameraAABB; };
 		virtual bool isVisible(const Camera& camera) const {
 			// default: always visible
 			return true;

@@ -68,8 +68,8 @@ namespace Lexvi {
         return glm::mat4(transforms);
     }
 
-    CameraAABB Quad::getBoundBox() const {
-        CameraAABB aabb{};
+    AABB Quad::getBoundBox() const {
+        AABB aabb{};
         aabb.min = glm::vec3(position.x - size.x / 2.0f, position.y - 0.0f, position.z - size.y / 2.0f);
         aabb.max = glm::vec3(position.x + size.x / 2.0f, position.y + 0.0f, position.z + size.y / 2.0f);
         return aabb;

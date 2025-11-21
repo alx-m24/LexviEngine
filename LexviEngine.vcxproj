@@ -161,6 +161,7 @@
     <ClInclude Include="include\LexviEngine.hpp" />
     <ClInclude Include="include\Game\Game.hpp" />
     <ClInclude Include="include\Input\Input.hpp" />
+    <ClInclude Include="include\Maths\AABB.hpp" />
     <ClInclude Include="include\Maths\Maths.hpp" />
     <ClInclude Include="include\Renderable\InstancedRenderable.hpp" />
     <ClInclude Include="include\Renderable\IRenderable\IRenderable.hpp" />

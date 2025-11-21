@@ -40,7 +40,7 @@ namespace Lexvi {
 
         void setTransforms(const glm::mat4& mat) override;
         glm::mat4 getTransforms() const override;
-        CameraAABB getBoundBox() const override;
+        AABB getBoundBox() const override;
         bool isVisible(const Camera& camera) const override;
 
         void setPosition(glm::vec3 position);

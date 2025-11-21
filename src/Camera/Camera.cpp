@@ -8,7 +8,7 @@ float CameraPlane::getSignedDistanceToPlane(const glm::vec3& point) const {
     return glm::dot(normal, point) + distance;
 }
 
-bool Lexvi::isInFrustum(const CameraFrustum& frustum, const CameraAABB& aabb) {
+bool Lexvi::isInFrustum(const CameraFrustum& frustum, const AABB& aabb) {
     // For each plane, check if all 8 corners are outside
     for (int i = 0; i < 6; ++i) {
         const CameraPlane& plane = frustum.planes[i];

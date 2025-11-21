@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+#include <Maths/AABB.hpp>
+
 namespace Lexvi {
     class Input;
 
@@ -20,17 +22,12 @@ namespace Lexvi {
         CameraPlane planes[6]; // left, right, top, bottom, near, far
     };
 
-    struct CameraAABB {
-        glm::vec3 min;
-        glm::vec3 max;
-    };
-
     struct CameraData {
         glm::mat4 view;
         glm::mat4 projection;
     };
 
-    bool isInFrustum(const CameraFrustum& frustum, const CameraAABB& aabb);
+    bool isInFrustum(const CameraFrustum& frustum, const AABB& aabb);
 
     bool IntersectPlanes(const CameraPlane& p1, const CameraPlane& p2, const CameraPlane& p3, glm::vec3& outPoint);
 
