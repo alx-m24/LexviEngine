@@ -51,7 +51,7 @@ namespace Lexvi {
 		Input() = default;
 
 	public:
-		void Update();
+		void BufferUpdates();
 
 	public:
 		// Checks if key is held accross frames

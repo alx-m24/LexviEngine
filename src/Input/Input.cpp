@@ -24,7 +24,7 @@ Lexvi::Input::MouseButtonState Lexvi::Input::getMouseButtonState(int button) con
     return it->second;
 }
 
-void Lexvi::Input::Update()
+void Lexvi::Input::BufferUpdates()
 {
     mouseDelta = glm::vec2(0.0f);
     lastmousePos = mousePos;

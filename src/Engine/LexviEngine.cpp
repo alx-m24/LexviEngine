@@ -126,7 +126,7 @@ void Engine::run()
 		float dt = frameTime - lastFrameTime;
 		lastFrameTime = frameTime;
 
-		inputSystem->Update();
+		inputSystem->BufferUpdates();
 
 		game->update(*this, dt);
 
