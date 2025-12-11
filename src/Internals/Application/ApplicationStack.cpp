@@ -1,6 +1,5 @@
-#include "pch.h"
-
-#include "Internals/Application/ApplicationStack.hpp"
+#include "LexviEngine/pch.h"
+#include "LexviEngine/Internals/Application/ApplicationStack.hpp"
 
 namespace Lexvi {
 	void ApplicationStack::AddApplicationLayer(std::unique_ptr<ApplicationLayer> app) {

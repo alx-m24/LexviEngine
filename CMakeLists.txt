@@ -13,7 +13,9 @@ add_library(${PROJECT_NAME} STATIC
 )
 
 # Include directories for this library
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+	include
+)
 
 # Include Precompiled header
-target_precompile_headers(LexviEngine PRIVATE "include/pch.h")
+target_precompile_headers(LexviEngine PRIVATE "include/LexviEngine/pch.h")
