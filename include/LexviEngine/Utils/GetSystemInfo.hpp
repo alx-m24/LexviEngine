@@ -1,18 +1,14 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <expected>
-#include <string>
+#include <string_view>
+
+#include "LexviEngine/Window/Window.hpp"
+#include "SystemInfo.hpp"
+
+#include <glad/glad.h>
 
 namespace Lexvi {
-	struct SystemInfo {
-		uint32_t glMajorVersion;
-		uint32_t glMinorVersion;
-		bool DSA_Support;
-	};
-
 	enum class SystemInfoError {
 		OK = 0,
 		WINDOW_INIT_FAILED,
@@ -20,7 +16,7 @@ namespace Lexvi {
 		VERSION_PARSE_FAILED
 	};
 
-	[[nodiscard]] inline std::string GetErrorString(SystemInfoError error) {
+	[[nodiscard]] inline std::string_view GetErrorString(SystemInfoError error) {
 		switch (error) {
 			case SystemInfoError::WINDOW_INIT_FAILED:
 				return "Failed to init glfw window";
@@ -37,50 +33,41 @@ namespace Lexvi {
 		};
 	}	
 
-	[[nodiscard]] std::expected<SystemInfo, SystemInfoError> getSystemInfo() noexcept  {
-		glfwInit();
-		
-		GLFWwindow* tempWindow = nullptr;
-		for (int major = 4; major >= 3 && !tempWindow; --major) {
-		    for (int minor = 6; minor >= 0 && !tempWindow; --minor) {
-		        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-		        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-		        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		        tempWindow = glfwCreateWindow(10, 10, "Dummy", nullptr, nullptr);
+	[[nodiscard]] inline std::expected<SystemInfo, SystemInfoError> getSystemInfo() noexcept  {
+		WindowInfo windowInfo {
+			.size = {10, 10},
+			.title = "",
+			.VSYNC = false,
+			.visible = false
+		};
+		Window tempWindow;
+
+		bool windowCreated = false;	
+		for (int major = 4; major >= 3 && !windowCreated; --major) {
+		    for (int minor = 6; minor >= 0 && !windowCreated; --minor) {
+			    windowInfo.systemInfo = {
+				.glMajorVersion = static_cast<uint32_t>(major),
+				.glMinorVersion = static_cast<uint32_t>(minor),
+				.DSA_Support = true
+			    };
+			    windowCreated = (tempWindow.Init(windowInfo) == WindowError::OK);
 		    }
 		}
-		if (!tempWindow) return std::unexpected(SystemInfoError::WINDOW_INIT_FAILED);
-		
-		glfwMakeContextCurrent(tempWindow);
-
-		auto terminate = [&tempWindow]() {
-			glfwDestroyWindow(tempWindow);
-			glfwTerminate();
-		};
-	
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		{
-			terminate();
-			return std::unexpected(SystemInfoError::GLAD_INIT_FAILED);
-		}
+		if (!windowCreated) return std::unexpected(SystemInfoError::WINDOW_INIT_FAILED);
 
 		const GLubyte* version = glGetString(GL_VERSION); // e.g: 4.6.0 NVIDIA 558.3
 		if (!version) {
-			terminate();
         		return std::unexpected(SystemInfoError::VERSION_PARSE_FAILED);
 		}
 		
 		const std::string versionString = reinterpret_cast<const char*>(version);
 		unsigned int major = 0, minor = 0;
 		if (sscanf(reinterpret_cast<const char*>(version), "%u.%u", &major, &minor) != 2) {
-			terminate();
 			return std::unexpected(SystemInfoError::VERSION_PARSE_FAILED);
 		}
 
 		bool coreDSA = (major > 4) || (major == 4 && minor >= 5);
 		bool extDSA = glfwExtensionSupported("GL_EXT_direct_state_access");
-
-		terminate();
 
 		return SystemInfo {
 			major,
