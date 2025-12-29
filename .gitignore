@@ -25,6 +25,7 @@ Makefile
 build/
 *.cmake
 !CMakeLists.txt
+.cache/
 
 # Precompiled headers
 *.gch
