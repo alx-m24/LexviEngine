@@ -1,10 +1,11 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include "WindowError.hpp"
 #include "LexviEngine/Utils/SystemInfo.hpp"
+
+struct GLFWwindow;
 
 namespace Lexvi {
 	using WindowSize = glm::uvec2;
@@ -37,9 +38,16 @@ namespace Lexvi {
 			[[nodiscard]] WindowError CreateWindow();
 			void DeleteWindow();
 
+        private:
+            void setCallbacks();
+            friend void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+
 		public:
 			[[nodiscard]] bool isOpen() const;
 			void ProcessCallbacks();
 			void SwapBuffers() const;
+
+        public:
+            WindowSize getSize() const;
 	};
 }

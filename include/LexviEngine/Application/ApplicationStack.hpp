@@ -12,12 +12,14 @@ namespace Lexvi {
 
 	public:
 		ApplicationStack() = default;
-		~ApplicationStack() = default;
+		~ApplicationStack();
 
 		void AddApplicationLayer(std::unique_ptr<ApplicationLayer> app);
 		void PopApplicationLayer();
 
 		void UpdateTop();
 		void RenderTop();
+
+		void PopAll();
 	};
 }

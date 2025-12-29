@@ -2,9 +2,10 @@
 
 #include <memory>
 
-#include "ApplicationContext.hpp"
-
 namespace Lexvi {
+	// Forward declaration
+	class ApplicationContext;
+
 	class ApplicationLayer {
 	protected:
 		std::shared_ptr<ApplicationContext> m_Context;

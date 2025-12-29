@@ -11,7 +11,9 @@ add_library(${PROJECT_NAME} STATIC
 	src/Application/ApplicationStack.cpp
 	src/Application/Application.cpp
 	src/Threading/ThreadRegistry.cpp
+	src/Utils/GetSystemInfo.cpp
 	src/Window/Window.cpp
+	src/Input/Input.cpp
 	src/LexviEngine.cpp
 	src/pch.cpp
 )

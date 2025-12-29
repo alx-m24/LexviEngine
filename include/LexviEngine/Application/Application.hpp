@@ -7,7 +7,7 @@ namespace Lexvi {
 		protected:
 			bool m_isRunning = true;
 
-		private:
+		protected:
 			ApplicationStack m_AppStack;
 	
 		public:
@@ -16,12 +16,17 @@ namespace Lexvi {
 			
 		public:
 			virtual void Init() = 0;
+
+		protected:
 			virtual void Shutdown() = 0;
+			virtual void AppUpdate() = 0;
 
 		public:
-			void update();
+			void Update();
 
-			void render();
+			void Render();
+
+			void FullShutdown();
 		public:
 			bool isRunning() const;
 	};

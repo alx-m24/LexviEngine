@@ -2,6 +2,10 @@
 #include "LexviEngine/Application/ApplicationStack.hpp"
 
 namespace Lexvi {
+	ApplicationStack::~ApplicationStack() {
+		PopAll();
+	}
+
 	void ApplicationStack::AddApplicationLayer(std::unique_ptr<ApplicationLayer> app) {
 		app->Init();
 
@@ -30,6 +34,13 @@ namespace Lexvi {
 	{
 		if (!m_Layers.empty()) {
 			m_Layers.top()->Render();
+		}
+	}
+
+	void ApplicationStack::PopAll() {
+		while (!m_Layers.empty()) {
+			m_Layers.top()->Shutdown();
+			m_Layers.pop();
 		}
 	}
 }

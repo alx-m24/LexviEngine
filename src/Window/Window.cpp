@@ -1,10 +1,6 @@
+#include <LexviEngine/pch.h>
 #include <LexviEngine/Window/Window.hpp>
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
-#include <iostream>
+#include <LexviEngine/Input/Input.hpp>
 
 namespace Lexvi {
 	Window::~Window() {
@@ -48,9 +44,31 @@ namespace Lexvi {
 			return WindowError::GLAD_INIT_FAIL;
 		}
 
-		// Set callbacks
+        this->setCallbacks();
+
 		return WindowError::OK;
 	}
+
+    void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
+        auto* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+        if (!win) return;
+
+        win->m_windowInfo.size = WindowSize(static_cast<float>(width), static_cast<float>(height));
+    }
+
+    void Window::setCallbacks() {
+        glfwSetWindowUserPointer(m_window, this);
+
+        glfwSetFramebufferSizeCallback(m_window, FramebufferSizeCallback);
+        glfwSetCursorPosCallback(m_window, Input::MousePositionCallback);
+        glfwSetKeyCallback(m_window, Input::keyCallback);
+        glfwSetScrollCallback(m_window, Input::MouseScrollCallback);
+        glfwSetMouseButtonCallback(m_window, Input::MouseButtonCallback);
+    }
+
+    WindowSize Window::getSize() const {
+        return this->m_windowInfo.size;
+    }
 
 	void Window::DeleteWindow() {
 		glfwDestroyWindow(m_window);
@@ -60,9 +78,9 @@ namespace Lexvi {
 	bool Window::isOpen() const {
 		return !glfwWindowShouldClose(m_window);
 	}
-
-	void Window::ProcessCallbacks() {
-		glfwPollEvents();
+    
+    void Window::ProcessCallbacks() {
+        glfwPollEvents();
 	}
 
 	void Window::SwapBuffers() const {

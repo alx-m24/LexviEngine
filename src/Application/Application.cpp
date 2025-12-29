@@ -6,11 +6,17 @@ namespace Lexvi {
 		return m_isRunning;
 	}
 
-	void Application::update() {
+	void Application::Update() {
+		this->AppUpdate();
 		m_AppStack.UpdateTop();
 	}
 
-	void Application::render() {
+	void Application::Render() {
 		m_AppStack.RenderTop();
+	}
+
+	void Application::FullShutdown() {
+		m_AppStack.PopAll();
+		Shutdown();
 	}
 }

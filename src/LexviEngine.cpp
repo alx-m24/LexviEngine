@@ -1,25 +1,33 @@
 #include "LexviEngine/pch.h"
 #include "LexviEngine/LexviEngine.hpp"
+#include "LexviEngine/Input/Input.hpp"
+#include "LexviEngine/Logging/Logging.hpp"
 #include "LexviEngine/Utils/GetSystemInfo.hpp"
 #include "LexviEngine/Threading/ThreadRegistry.hpp"
 
 namespace Lexvi {
 	bool LexviEngine::Init() {	
-		auto sysInfo = getSystemInfo();
+		auto err = Thread::RegisterThread("Main");
 
-		if (!sysInfo) {
+		auto sysInfo_expected = getSystemInfo();
+
+		if (!sysInfo_expected) {
+			Log("Failed to get system info");
 			return false;
 		}
+		SystemInfo sysInfo = *sysInfo_expected;
+		Log("OpenGL version: {}.{}", sysInfo.glMajorVersion, sysInfo.glMinorVersion);
 
 		auto windowError = m_window.Init(WindowInfo {
 				.size = {800, 600},
 				.title = "Test",
 				.VSYNC = true,
 				.visible = true,
-				.systemInfo = *sysInfo
+				.systemInfo = sysInfo
 				});
 
 		if (windowError != WindowError::OK) {
+			Log("{}{}", "Failed to init window: ", GetErrorString(windowError));
 			return false;
 		}
 
@@ -29,21 +37,10 @@ namespace Lexvi {
 	}
 
 	void LexviEngine::Shutdown() {
-		m_app->Shutdown();
+		m_app->FullShutdown();
 	}
 
 	void LexviEngine::Run() {
-		auto err = ThreadRegistry::RegisterThread("Main");
-
-		auto testThread = MakeNamedThread("Physics", []() {
-				std::cout << "[" << ThreadRegistry::CurrentThreadName() << "] ";
-				std::cout << "Physicsssss" << std::endl;
-				return;
-				});
-		if (!testThread) {
-			std::cout << "[Physcis]: " << GetErrorString(testThread.error());
-		}
-
 		using clock = std::chrono::steady_clock;
 		auto lastFrameTime = clock::now();
 		
@@ -54,22 +51,15 @@ namespace Lexvi {
 			lastFrameTime = currentFrameTime;
 
 			m_window.ProcessCallbacks();
+            Input::CalculateDeltas();
 
-			glm::vec3 clearColor{0.0f};
-			clearColor.r = glm::sin(m_currentFrameTime);
-			clearColor.g = glm::cos(m_currentFrameTime);
-			clearColor.b = glm::sin(m_currentFrameTime + glm::pi<float>());
-			clearColor = (clearColor + glm::vec3(1.0f)) / 2.0f;
+			m_app->Update();
 
-			glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
-			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+            Input::ClearFrameData();
+
+			m_app->Render();
 
 			m_window.SwapBuffers();
-		}
-
-		if(testThread) {
-			std::thread& th = testThread.value();
-			if (th.joinable()) th.join();
 		}
 	}
 }
