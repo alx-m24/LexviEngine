@@ -7,29 +7,33 @@ namespace Lexvi {
 	class ApplicationContext;
 
 	class ApplicationLayer {
-	protected:
-		std::shared_ptr<ApplicationContext> m_Context;
+	    protected:
+		    std::shared_ptr<ApplicationContext> m_Context;
 
-	public:
-		ApplicationLayer(std::shared_ptr<ApplicationContext> context) : m_Context(context) {}
+	    public:
+	    	ApplicationLayer(std::shared_ptr<ApplicationContext> context) : m_Context(context) {}
 
-		// Not copyable or movable
-		ApplicationLayer(const ApplicationLayer&) = delete;
-		ApplicationLayer& operator=(const ApplicationLayer&) = delete;
+	    	// Not copyable or movable
+	    	ApplicationLayer(const ApplicationLayer&) = delete;
+	    	ApplicationLayer& operator=(const ApplicationLayer&) = delete;
 
-		ApplicationLayer(ApplicationLayer&&) = delete;
-		ApplicationLayer& operator=(ApplicationLayer&&) = delete;
+	    	ApplicationLayer(ApplicationLayer&&) = delete;
+	    	ApplicationLayer& operator=(ApplicationLayer&&) = delete;
 
-		virtual ~ApplicationLayer() {}
+	    	virtual ~ApplicationLayer() {}
 
-		virtual void Init() = 0;
+	    	virtual void Init() = 0;
 
-		virtual void Reload() = 0;
+	    	virtual void Reload() = 0;
 
-		virtual void Update() = 0;
-		virtual void Render() = 0;
+	    	virtual void Update() = 0;
+	    	virtual void Render() = 0;
 
-		virtual void Shutdown() = 0;
+	    	virtual void Shutdown() = 0;
+
+            // Transitions (optional): returns true if transition over
+            virtual bool OnPush(float secondsSincePushed) { return true; }
+            virtual bool OnPop(float secondsSincePopped) { return true; }
 	};
 
 	template<typename T>

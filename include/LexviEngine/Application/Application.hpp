@@ -10,8 +10,8 @@ namespace Lexvi {
 		protected:
 			ApplicationStack m_AppStack;
 	
-		public:
-			Application() = default;
+        public:
+            Application() = default;
 			virtual ~Application() {};
 			
 		public:
@@ -27,6 +27,7 @@ namespace Lexvi {
 			void Render();
 
 			void FullShutdown();
+
 		public:
 			bool isRunning() const;
 	};

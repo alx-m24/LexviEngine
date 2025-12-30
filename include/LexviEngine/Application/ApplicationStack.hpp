@@ -1,25 +1,30 @@
 #pragma once
 
-#include <stack>
+#include <vector>
 #include <memory>
 
 #include "ApplicationLayer.hpp"
 
 namespace Lexvi {
 	class ApplicationStack {
-	private:
-		std::stack<std::unique_ptr<ApplicationLayer>> m_Layers;
+	    private:
+	    	std::vector<std::unique_ptr<ApplicationLayer>> m_Layers;
+            ApplicationLayer* m_currentLayer = nullptr;
 
-	public:
-		ApplicationStack() = default;
-		~ApplicationStack();
+        private:
+            size_t m_pushTransitioning = 0;
+            size_t m_popTransitioning = 0;
 
-		void AddApplicationLayer(std::unique_ptr<ApplicationLayer> app);
-		void PopApplicationLayer();
+	    public:
+	    	ApplicationStack() = default;
+	    	~ApplicationStack();
 
-		void UpdateTop();
-		void RenderTop();
+	    	void AddApplicationLayer(std::unique_ptr<ApplicationLayer> app);
+	    	void PopApplicationLayer();
 
-		void PopAll();
+	    	void UpdateActive();
+	    	void RenderActive();
+
+	    	void PopAll();
 	};
 }
