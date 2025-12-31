@@ -1,4 +1,5 @@
 #include "LexviEngine/pch.h"
+#include "LexviEngine/Time/Time.hpp"
 #include "LexviEngine/Application/ApplicationStack.hpp"
 
 namespace Lexvi {
@@ -11,10 +12,12 @@ namespace Lexvi {
 
 		m_Layers.push_back(std::move(app));
         m_pushTransitioning += 1;
+        m_pushTransitionStart.push_back(Time::GetTime());
 	}
 
 	void ApplicationStack::PopApplicationLayer() {
         m_popTransitioning += 1;
+        m_popTransitionStart.push_back(Time::GetTime());
 	}
 
 	void ApplicationStack::UpdateActive()
@@ -25,11 +28,14 @@ namespace Lexvi {
 
         if (m_pushTransitioning) { // Run OnPush for top layer && update it 
             auto& top = m_Layers.back();
-           
-            bool doneTransitioning = top->OnPush(0.0f /*TODO*/);
+          
+            double startTransitionTime = m_pushTransitionStart.back();
+            bool doneTransitioning = top->OnPush(static_cast<float>(Time::GetTime() - startTransitionTime));
             if (doneTransitioning) {
-                m_pushTransitioning -= 1;
+                if (m_pushTransitioning > 0) m_pushTransitioning -= 1;
+                
                 m_currentLayer = top.get();
+                m_pushTransitionStart.pop_back();
             }
 
             top->Update();
@@ -43,7 +49,8 @@ namespace Lexvi {
 		    	m_Layers.at(layerNum - 2)->Update();
 		    }
 
-            bool doneTransitioning = top->OnPop(0.0f /*TODO*/);
+            double startTransitionTime = m_popTransitionStart.back();
+            bool doneTransitioning = top->OnPop(static_cast<float>(Time::GetTime() - startTransitionTime));
             if (doneTransitioning) {
                 if (m_popTransitioning > 0) m_popTransitioning -= 1;
                 
@@ -54,6 +61,7 @@ namespace Lexvi {
                     m_currentLayer = m_Layers.back().get();
                     m_currentLayer->Reload();
                 }
+                m_popTransitionStart.pop_back();
             }
         }
 	}

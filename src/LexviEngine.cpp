@@ -1,6 +1,7 @@
 #include "LexviEngine/pch.h"
 #include "LexviEngine/LexviEngine.hpp"
 #include "LexviEngine/Input/Input.hpp"
+#include "LexviEngine/Time/Time.hpp"
 #include "LexviEngine/Logging/Logging.hpp"
 #include "LexviEngine/Utils/GetSystemInfo.hpp"
 #include "LexviEngine/Threading/ThreadRegistry.hpp"
@@ -31,6 +32,8 @@ namespace Lexvi {
 			return false;
 		}
 
+        Time::Init();
+
 		m_app->Init();
 
 		return true;
@@ -41,14 +44,8 @@ namespace Lexvi {
 	}
 
 	void LexviEngine::Run() {
-		using clock = std::chrono::steady_clock;
-		auto lastFrameTime = clock::now();
-		
 		while (m_app->isRunning() && m_window.isOpen()) {
-			auto currentFrameTime = clock::now();
-			float delta_s = std::chrono::duration<float>(currentFrameTime - lastFrameTime).count();
-			m_currentFrameTime += delta_s;
-			lastFrameTime = currentFrameTime;
+            Time::Update();
 
 			m_window.ProcessCallbacks();
             Input::CalculateDeltas();

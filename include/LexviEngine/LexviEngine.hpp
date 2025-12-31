@@ -12,7 +12,6 @@ namespace Lexvi {
 
 		private:
 			Window m_window;
-			float m_currentFrameTime = 0.0f;
 
 		public:
 			LexviEngine(std::unique_ptr<Application> app) : m_app(std::move(app)) {}

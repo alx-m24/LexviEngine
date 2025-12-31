@@ -13,6 +13,7 @@ add_library(${PROJECT_NAME} STATIC
 	src/Threading/ThreadRegistry.cpp
 	src/Utils/GetSystemInfo.cpp
 	src/Window/Window.cpp
+    src/Time/Time.cpp
 	src/Input/Input.cpp
 	src/LexviEngine.cpp
 	src/pch.cpp

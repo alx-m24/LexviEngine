@@ -12,8 +12,11 @@ namespace Lexvi {
             ApplicationLayer* m_currentLayer = nullptr;
 
         private:
-            size_t m_pushTransitioning = 0;
-            size_t m_popTransitioning = 0;
+            uint8_t m_pushTransitioning = 0;
+            uint8_t m_popTransitioning = 0;
+
+            std::vector<double> m_pushTransitionStart;
+            std::vector<double> m_popTransitionStart;
 
 	    public:
 	    	ApplicationStack() = default;
