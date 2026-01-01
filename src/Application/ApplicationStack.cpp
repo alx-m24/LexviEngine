@@ -1,5 +1,6 @@
 #include "LexviEngine/pch.h"
 #include "LexviEngine/Time/Time.hpp"
+#include "LexviEngine/Logging/Logging.hpp"
 #include "LexviEngine/Application/ApplicationStack.hpp"
 
 namespace Lexvi {
@@ -18,6 +19,12 @@ namespace Lexvi {
 	void ApplicationStack::PopApplicationLayer() {
         m_popTransitioning += 1;
         m_popTransitionStart.push_back(Time::GetTime());
+        
+        const size_t layerNum = m_Layers.size();
+		if (layerNum > 1) {
+            m_currentLayer = m_Layers.at(layerNum - 2).get();
+            m_currentLayer->Reload();
+		}
 	}
 
 	void ApplicationStack::UpdateActive()
@@ -28,10 +35,10 @@ namespace Lexvi {
 
         if (m_pushTransitioning) { // Run OnPush for top layer && update it 
             auto& top = m_Layers.back();
-          
+            
             double startTransitionTime = m_pushTransitionStart.back();
-            bool doneTransitioning = top->OnPush(static_cast<float>(Time::GetTime() - startTransitionTime));
-            if (doneTransitioning) {
+            auto transitionState = top->OnPush(static_cast<float>(Time::GetTime() - startTransitionTime));
+            if (transitionState == ApplicationLayer::TransitionState::Completed) {
                 if (m_pushTransitioning > 0) m_pushTransitioning -= 1;
                 
                 m_currentLayer = top.get();
@@ -44,25 +51,18 @@ namespace Lexvi {
         if (m_popTransitioning) { // Run OnPop for top layer && update layer right under
             auto& top = m_Layers.back();
             
-            const size_t layerNum = m_Layers.size();
-		    if (layerNum > 1) {
-		    	m_Layers.at(layerNum - 2)->Update();
-		    }
 
             double startTransitionTime = m_popTransitionStart.back();
-            bool doneTransitioning = top->OnPop(static_cast<float>(Time::GetTime() - startTransitionTime));
-            if (doneTransitioning) {
+            auto transitionState = top->OnPop(static_cast<float>(Time::GetTime() - startTransitionTime));
+            if (transitionState == ApplicationLayer::TransitionState::Completed) {
                 if (m_popTransitioning > 0) m_popTransitioning -= 1;
                 
                 top->Shutdown();
                 m_Layers.pop_back();
 
-                if (!m_Layers.empty()) {
-                    m_currentLayer = m_Layers.back().get();
-                    m_currentLayer->Reload();
-                }
                 m_popTransitionStart.pop_back();
             }
+            else top->Update();
         }
 	}
 
@@ -73,10 +73,7 @@ namespace Lexvi {
         if (m_currentLayer) m_currentLayer->Render();
 
         if (m_pushTransitioning || m_popTransitioning) {
-            const size_t layerNum = m_Layers.size();
-		    if (layerNum > 1) {
-		    	m_Layers.at(layerNum - 2)->Render();
-		    }
+            m_Layers.back()->Render();
         }
 	}
 

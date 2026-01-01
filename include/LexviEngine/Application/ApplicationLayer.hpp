@@ -31,9 +31,15 @@ namespace Lexvi {
 
 	    	virtual void Shutdown() = 0;
 
+        public:
+            enum class TransitionState : uint8_t {
+                InProgress = 0,
+                Completed
+            };
+
             // Transitions (optional): returns true if transition over
-            virtual bool OnPush(float secondsSincePushed) { return true; }
-            virtual bool OnPop(float secondsSincePopped) { return true; }
+            virtual TransitionState OnPush(float secondsSincePushed) { return TransitionState::Completed; }
+            virtual TransitionState OnPop(float secondsSincePopped) { return TransitionState::Completed; }
 	};
 
 	template<typename T>
