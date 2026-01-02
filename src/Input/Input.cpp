@@ -76,12 +76,12 @@ namespace Lexvi {
             return keysDown.test(static_cast<size_t>(key));
         }
         
-        bool isKeyReleased(Key key) {
+        bool wasKeyReleased(Key key) {
             size_t k = static_cast<size_t>(key);
             return keysDownLastFrame.test(k) && !keysDown.test(k);
         }
 
-        bool isKeyPressed(Key key) {
+        bool wasKeyPressed(Key key) {
             size_t k = static_cast<size_t>(key);
             return !keysDownLastFrame.test(k) && keysDown.test(k);
         }

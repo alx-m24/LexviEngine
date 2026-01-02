@@ -158,8 +158,8 @@ namespace Lexvi {
         
         bool isKeyDown(Key key);
         bool isKeyReleased(Key key);
-        bool isKeyPressed(Key key);
-        bool isKeyRepeat(Key key);
+        bool wasKeyPressed(Key key);
+        bool wasKeyRepeat(Key key);
 
         bool isMouseButtonDown(MouseButton button);
         

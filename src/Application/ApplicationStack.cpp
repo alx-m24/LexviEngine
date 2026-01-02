@@ -47,10 +47,8 @@ namespace Lexvi {
 
             top->Update();
         }
-
         if (m_popTransitioning) { // Run OnPop for top layer && update layer right under
             auto& top = m_Layers.back();
-            
 
             double startTransitionTime = m_popTransitionStart.back();
             auto transitionState = top->OnPop(static_cast<float>(Time::GetTime() - startTransitionTime));
@@ -61,6 +59,13 @@ namespace Lexvi {
                 m_Layers.pop_back();
 
                 m_popTransitionStart.pop_back();
+
+                    if (!m_Layers.empty()) {
+                        m_currentLayer = m_Layers.back().get();
+                    }
+                    else {
+                        m_currentLayer = nullptr;
+                    }
             }
             else top->Update();
         }

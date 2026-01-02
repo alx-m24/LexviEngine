@@ -3,6 +3,7 @@
 #include "LexviEngine/Input/Input.hpp"
 #include "LexviEngine/Time/Time.hpp"
 #include "LexviEngine/Logging/Logging.hpp"
+#include "LexviEngine/Threading/SmartThread.hpp"
 #include "LexviEngine/Utils/GetSystemInfo.hpp"
 #include "LexviEngine/Threading/ThreadRegistry.hpp"
 
@@ -44,6 +45,16 @@ namespace Lexvi {
 	}
 
 	void LexviEngine::Run() {
+        Thread::SmartThread worker("CounterThread", [](std::stop_token st) {
+            int i = 0;
+            while (!st.stop_requested()) {
+                Log("Count: {}", ++i);
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
+            Log("Stop requested, exiting...");
+        });
+        // worker.RequestStop();
+
 		while (m_app->isRunning() && m_window.isOpen()) {
             Time::Update();
 
