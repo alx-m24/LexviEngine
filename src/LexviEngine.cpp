@@ -6,6 +6,9 @@
 #include "LexviEngine/Threading/SmartThread.hpp"
 #include "LexviEngine/Utils/GetSystemInfo.hpp"
 #include "LexviEngine/Threading/ThreadRegistry.hpp"
+#include "LexviEngine/ResourcePool/ResourcePool.hpp"
+#include "LexviEngine/ResourcePool/Resource.hpp"
+#include "LexviEngine/Threading/Worker.hpp"
 
 namespace Lexvi {
 	bool LexviEngine::Init() {	
@@ -55,6 +58,51 @@ namespace Lexvi {
         });
         // worker.RequestStop();
 
+        using Pools = Lexvi::ResourcePool::ResourcePools<int, float>;
+        using IntResource = ResourcePool::Resource<int>;
+        using IntHandle = ResourcePool::ResourceHandle<int>;
+        
+        Pools pools;
+        ResourcePool::ResourcePool<int>& intPool = GetPool<int>(pools);
+
+        Thread::Worker<int, std::string> testWorker(
+                "TestWorker",
+                intPool,
+                [](IntResource& res, const std::string& input) { 
+                    Log("{}", input);
+                    res.data = 69; 
+                } 
+            ); 
+
+        Thread::Worker<float, std::string> testWorker2(
+                "TestWorker2",
+                GetPool<float>(pools),
+                [](ResourcePool::Resource<float>& res, const std::string& input) {
+                    Log("{}", input);
+                    res.data = 69.69f;
+                }
+            );
+
+        IntHandle firstHandle = testWorker.Submit("First job");
+        Log("First Handle: {}", firstHandle.id);
+
+        ResourcePool::ResourceHandle<float> floatHandle1 = testWorker2.Submit("Second job, first for float");
+        Log("Float handle: {}", floatHandle1.id);
+
+        if (ResourcePool::isReady(firstHandle, intPool)) {
+            Log("First value: {}", ResourcePool::Get(firstHandle, intPool).data);
+        }
+        else {
+            Log("Value of index '{}' in int is not ready yet", firstHandle.id);
+        }
+        
+        if (ResourcePool::isReady(floatHandle1, GetPool<float>(pools))) {
+            Log("First float: {}", ResourcePool::Get(floatHandle1, GetPool<float>(pools)).data);
+        }
+        else {
+            Log("Value of index '{}' in float is not ready yet", floatHandle1.id);
+        }
+
 		while (m_app->isRunning() && m_window.isOpen()) {
             Time::Update();
 
@@ -69,5 +117,22 @@ namespace Lexvi {
 
 			m_window.SwapBuffers();
 		}
+
+
+        if (ResourcePool::isReady(firstHandle, intPool)) {
+            Log("First value: {}", ResourcePool::Get(firstHandle, intPool).data);
+        }
+        else {
+            Log("Value of index '{}' is not ready yet", firstHandle.id);
+        }
+
+
+        if (ResourcePool::isReady(floatHandle1, GetPool<float>(pools))) {
+            Log("First float: {}", ResourcePool::Get(floatHandle1, GetPool<float>(pools)).data);
+        }
+        else {
+            Log("Value of index '{}' in float is not ready yet", floatHandle1.id);
+        }
+
 	}
 }
