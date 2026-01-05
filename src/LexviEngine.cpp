@@ -9,6 +9,8 @@
 #include "LexviEngine/ResourcePool/ResourcePool.hpp"
 #include "LexviEngine/ResourcePool/Resource.hpp"
 #include "LexviEngine/Threading/Worker.hpp"
+#include "LexviEngine/Threading/SystemThread.hpp"
+#include "LexviEngine/Threading/SystemThreadWithCommands.hpp"
 
 namespace Lexvi {
 	bool LexviEngine::Init() {	
@@ -46,6 +48,47 @@ namespace Lexvi {
 	void LexviEngine::Shutdown() {
 		m_app->FullShutdown();
 	}
+
+    struct PhysicsCommand {
+        uint32_t entityID = 0;
+    };
+
+    struct PhysicsBuffer {
+        std::vector<glm::vec3> positions;
+    };
+
+    template<typename Derived>
+    using PhyscisBase = Thread::SystemThreadWithQueue<Derived, PhysicsBuffer, 20u, PhysicsCommand>;
+    class PhysicsThread : public PhyscisBase<PhysicsThread>
+    {
+        public:
+            PhysicsThread() : PhyscisBase<PhysicsThread>("Physics") {}
+
+        public:
+            void Tick() {
+                Log("Hi...");
+            }
+        
+        protected:
+            void ExecuteCommand(const PhysicsCommand& cmd) {
+
+            }   
+    };
+
+    struct WeatherBuffer {};
+
+    template<typename Derived>
+    using WeatherBase = Thread::SystemThread<Derived, WeatherBuffer, 1u>;
+    class WeatherThread : public WeatherBase<WeatherThread>
+    {
+        public:
+            WeatherThread() : WeatherBase<WeatherThread>("Weather") {}
+
+        public:
+            void Tick() {
+                Log("How is the weather???");
+            }
+    };
 
 	void LexviEngine::Run() {
         Thread::SmartThread worker("CounterThread", [](std::stop_token st) {
@@ -96,12 +139,16 @@ namespace Lexvi {
             Log("Value of index '{}' in int is not ready yet", firstHandle.id);
         }
         
+
         if (ResourcePool::isReady(floatHandle1, GetPool<float>(pools))) {
             Log("First float: {}", ResourcePool::Get(floatHandle1, GetPool<float>(pools)).data);
         }
         else {
             Log("Value of index '{}' in float is not ready yet", floatHandle1.id);
         }
+
+        PhysicsThread physicsThread;
+        WeatherThread weatherThread;
 
 		while (m_app->isRunning() && m_window.isOpen()) {
             Time::Update();
@@ -133,6 +180,5 @@ namespace Lexvi {
         else {
             Log("Value of index '{}' in float is not ready yet", floatHandle1.id);
         }
-
 	}
 }

@@ -5,9 +5,7 @@
 #include <format>
 #include <iostream>
 #include <mutex>
-#include <string>
 #include <string_view>
-#include <utility>
 
 namespace Lexvi {
 	inline std::mutex g_logMutex;
