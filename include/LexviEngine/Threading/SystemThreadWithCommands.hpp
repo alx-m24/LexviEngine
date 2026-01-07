@@ -78,6 +78,12 @@ namespace Lexvi {
                         std::this_thread::sleep_until(start + interval);
                     }
                 }
+
+            protected:
+                TBuffer& getWriteBuffer() {
+                    bool buffer = m_writeBuffer.load(std::memory_order_acquire);
+                    return m_buffers[buffer];
+                }
             
             public:
                 TBuffer getLatest() const {

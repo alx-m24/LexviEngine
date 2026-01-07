@@ -11,8 +11,17 @@
 #include "LexviEngine/Threading/Worker.hpp"
 #include "LexviEngine/Threading/SystemThread.hpp"
 #include "LexviEngine/Threading/SystemThreadWithCommands.hpp"
+#include "LexviEngine/ECS/ECS.hpp"
 
 namespace Lexvi {
+
+    class PositionComponent : public ECS::ComponentTag {
+        public:
+            glm::vec3 position;
+    };
+
+    class MeshComponent : public ECS::ComponentTag {};
+
 	bool LexviEngine::Init() {	
 		auto err = Thread::RegisterThread("Main");
 
@@ -42,6 +51,32 @@ namespace Lexvi {
 
 		m_app->Init();
 
+        ECS::ECS<PositionComponent, MeshComponent> ecs{};
+        
+        auto e_err = ecs.CreateEntity<PositionComponent, MeshComponent>();
+
+        if (!e_err) {
+            ECS::AddError error = e_err.error();
+            Log("{}", ECS::GetErrorString(error));
+        }
+        else {
+            ECS::Entity first_e = *e_err;
+            Log("First entity: id = {}, gen = {}", first_e.id, first_e.generation);
+        }
+
+        ECS::Entity e2 = *ecs.CreateEntity<PositionComponent>();
+        Log("Second entity: id = {}, gen = {}", e2.id, e2.generation);
+
+        Log("Freeing first entity");
+
+        ecs.DestroyEntity(*e_err);
+        
+        
+        ECS::Entity e3 = *ecs.CreateEntity<PositionComponent>();
+        Log("Third entity: id = {}, gen = {}", e3.id, e3.generation);
+        
+        return false;
+
 		return true;
 	}
 
@@ -50,44 +85,32 @@ namespace Lexvi {
 	}
 
     struct PhysicsCommand {
-        uint32_t entityID = 0;
     };
 
     struct PhysicsBuffer {
-        std::vector<glm::vec3> positions;
+        uint64_t frameNum = 0;
     };
 
     template<typename Derived>
-    using PhyscisBase = Thread::SystemThreadWithQueue<Derived, PhysicsBuffer, 20u, PhysicsCommand>;
-    class PhysicsThread : public PhyscisBase<PhysicsThread>
-    {
+    using PhyscisBase = Thread::SystemThreadWithQueue<Derived, PhysicsBuffer, 200u, PhysicsCommand>;
+    class PhysicsThread : public PhyscisBase<PhysicsThread> {
         public:
             PhysicsThread() : PhyscisBase<PhysicsThread>("Physics") {}
 
+        private:
+            uint64_t frameNum = 0;
+
         public:
             void Tick() {
-                Log("Hi...");
+                PhysicsBuffer& buffer = getWriteBuffer();
+
+                buffer.frameNum = ++frameNum;
             }
         
         protected:
             void ExecuteCommand(const PhysicsCommand& cmd) {
 
             }   
-    };
-
-    struct WeatherBuffer {};
-
-    template<typename Derived>
-    using WeatherBase = Thread::SystemThread<Derived, WeatherBuffer, 1u>;
-    class WeatherThread : public WeatherBase<WeatherThread>
-    {
-        public:
-            WeatherThread() : WeatherBase<WeatherThread>("Weather") {}
-
-        public:
-            void Tick() {
-                Log("How is the weather???");
-            }
     };
 
 	void LexviEngine::Run() {
@@ -148,7 +171,6 @@ namespace Lexvi {
         }
 
         PhysicsThread physicsThread;
-        WeatherThread weatherThread;
 
 		while (m_app->isRunning() && m_window.isOpen()) {
             Time::Update();
@@ -160,17 +182,35 @@ namespace Lexvi {
 
             Input::ClearFrameData();
 
+            PhysicsBuffer physicsBuffer = physicsThread.getLatest();
+            Log("[Physics] FrameNum: {}", physicsBuffer.frameNum);
+
 			m_app->Render();
 
 			m_window.SwapBuffers();
 		}
 
 
-        if (ResourcePool::isReady(firstHandle, intPool)) {
-            Log("First value: {}", ResourcePool::Get(firstHandle, intPool).data);
+        ResourcePool::FreeResource(firstHandle, intPool);
+        auto newHandle = testWorker.Submit("Second job");
+
+        if (!ResourcePool::isValid(firstHandle, intPool)) {
+            Log("Value of index '{}' and generation '{}' is not valid", firstHandle.id, firstHandle.generation);
         }
         else {
-            Log("Value of index '{}' is not ready yet", firstHandle.id);
+            Log("First value: {}", ResourcePool::Get(firstHandle, intPool).data);
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        if (!ResourcePool::isReady(newHandle, intPool)) {
+            Log("Value of index '{}' and generation '{}' is not ready", newHandle.id, newHandle.generation);
+        }
+        else if (!ResourcePool::isValid(newHandle, intPool)) {
+            Log("Value of index '{}' and generation '{}' is not valid", newHandle.id, newHandle.generation);
+        }
+        else {
+            Log("Second value: {}", ResourcePool::Get(newHandle, intPool).data);
         }
 
 

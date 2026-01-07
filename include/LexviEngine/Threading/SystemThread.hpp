@@ -7,8 +7,7 @@ namespace Lexvi {
         // Prefer using indirections (pointers, handles, references) inside TBuffer as getLatest() returns a copy
         template<typename Derived, typename TBuffer, uint32_t RefreshRate>
         requires std::copyable<TBuffer>
-        class SystemThread 
-        {
+        class SystemThread {
             private:
                 static_assert(RefreshRate > 0, "RefreshRate must be greater than 0");
 
@@ -42,6 +41,12 @@ namespace Lexvi {
 
                         std::this_thread::sleep_until(start + interval);
                     }
+                }
+
+            protected:
+                TBuffer& getWriteBuffer() {
+                    bool buffer = m_writeBuffer.load(std::memory_order_acquire);
+                    return m_buffers[buffer];
                 }
 
             public:
