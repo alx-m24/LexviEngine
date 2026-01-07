@@ -17,6 +17,9 @@
 venv/
 Scripts/venv/
 
+# Custom Scripts
+Scripts/Tmux_Init.sh
+
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt
