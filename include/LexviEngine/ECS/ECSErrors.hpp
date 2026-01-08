@@ -43,5 +43,26 @@ namespace Lexvi {
                     break;
             };
         }
+
+        enum class RemoveError {
+            OK = 0,
+            DOES_NOT_EXISTS,
+            INVALID_ID
+        };
+
+        [[nodiscard]] inline std::string_view GetErrorString(RemoveError e) {
+            switch (e) {
+                case Lexvi::ECS::RemoveError::DOES_NOT_EXISTS:
+                    return "Entity does not exists";
+                    break;
+                case Lexvi::ECS::RemoveError::INVALID_ID:
+                    return "Invalid entity";
+                    break;
+                default:
+                    return "No or unknown error";
+                    break;
+            };
+
+        }
     }
 }

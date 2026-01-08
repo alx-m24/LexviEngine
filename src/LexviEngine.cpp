@@ -64,17 +64,52 @@ namespace Lexvi {
             Log("First entity: id = {}, gen = {}", first_e.id, first_e.generation);
         }
 
-        ECS::Entity e2 = *ecs.CreateEntity<PositionComponent>();
+        ECS::Entity e2 = *ecs.CreateEntity<PositionComponent, MeshComponent>();
         Log("Second entity: id = {}, gen = {}", e2.id, e2.generation);
 
         Log("Freeing first entity");
 
         ecs.DestroyEntity(*e_err);
         
-        
         ECS::Entity e3 = *ecs.CreateEntity<PositionComponent>();
         Log("Third entity: id = {}, gen = {}", e3.id, e3.generation);
         
+        Log("This entity has PositionComponent: {}", ecs.HasComponents<PositionComponent>(e3));
+        Log("This entity has MeshComponent: {}", ecs.HasComponents<MeshComponent>(e3));
+        Log("This entity has PositionComponent AND MeshComponent: {}", ecs.HasComponents<PositionComponent, MeshComponent>(e3));
+
+        auto pos_err = ecs.getComponent<PositionComponent>(e3);
+        if (!pos_err) {
+            Log("{}", ECS::GetErrorString(pos_err.error()));
+        }
+        else {
+            PositionComponent& pos = *pos_err;
+            pos.position.x = 34.43f;
+        }
+
+        const PositionComponent& e3_pos = *ecs.getComponentConst<PositionComponent>(e3);
+        Log("Third entity Position: {}, {}", e3_pos.position.x, e3_pos.position.y);
+
+        Log("Testing Position only");
+        ecs.ForEach<PositionComponent>([] (const ECS::Entity& e, PositionComponent& pos) {
+                Log("Entity: id = {}, gen = {} -> position: ({}, {}, {})", e.id, e.generation, pos.position.x, pos.position.y, pos.position.z);
+            }
+        );
+        
+        Log("Testing Position and Mesh");
+        ecs.ForEach<PositionComponent, MeshComponent>([] (const ECS::Entity& e, PositionComponent& pos, MeshComponent& mesh) {
+                Log("Entity: id = {}, gen = {} -> position: ({}, {}, {}) && mesh: ({})", e.id, e.generation, pos.position.x, pos.position.y, pos.position.z, "No way to print mesh");
+            }
+        );
+
+        ECS::Snapshot<PositionComponent> snapshot = ecs.getSnapshot<PositionComponent>();
+        Log("Taking Snapshot of Positions");
+        for (size_t i{0}; i < snapshot.entities.size(); ++i) {
+            const ECS::Entity& e = snapshot.entities[i];
+            const glm::vec3& pos = std::get<std::vector<PositionComponent>>(snapshot.components).at(i).position;
+            Log("Entity: ({}, {}) -> Position: ({}, {}, {})", e.id, e.generation, pos.x, pos.y, pos.z);
+        }
+
         return false;
 
 		return true;
