@@ -110,6 +110,14 @@ namespace Lexvi {
             Log("Entity: ({}, {}) -> Position: ({}, {}, {})", e.id, e.generation, pos.x, pos.y, pos.z);
         }
 
+        Log("Taking Snapshot of Positions using past Snapshot by ref");
+        ecs.getSnapshot<PositionComponent>(snapshot);
+        for (size_t i{0}; i < snapshot.entities.size(); ++i) {
+            const ECS::Entity& e = snapshot.entities[i];
+            const glm::vec3& pos = std::get<std::vector<PositionComponent>>(snapshot.components).at(i).position;
+            Log("Entity: ({}, {}) -> Position: ({}, {}, {})", e.id, e.generation, pos.x, pos.y, pos.z);
+        }
+
         return false;
 
 		return true;
