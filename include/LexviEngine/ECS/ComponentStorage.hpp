@@ -42,7 +42,7 @@ namespace Lexvi {
 
                     const size_t& mappedID = m_map[id];
 
-                    return mappedID < m_storage.size() && m_entities[mappedID] == e;
+                    return mappedID < m_storage.size() && m_entities[mappedID].valid() && m_entities[mappedID] == e;
                 }
 
 
@@ -78,7 +78,7 @@ namespace Lexvi {
                     if (!e.valid()) return RemoveError::INVALID_ID;
                     if (!hasEntity(e)) return RemoveError::DOES_NOT_EXISTS;
 
-                    // Changing m_entities[mappedID] should invalidate passed Entity
+                    // Changing m_entities[mappedID] invalidates passed Entity
                     size_t id = static_cast<size_t>(e.id);
                     const size_t& mappedID = m_map[id];
 

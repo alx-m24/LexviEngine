@@ -5,6 +5,8 @@
 #include <mutex>
 #include "Resource.hpp"
 
+#include <LexviEngine/Logging/Logging.hpp>
+
 namespace Lexvi {
     namespace ResourcePool {
         template<typename T>
@@ -89,7 +91,7 @@ namespace Lexvi {
 
         template<typename T>
         bool isValid(const ResourceHandle<T>& handle, const ResourcePool<T>& pool) {
-            return Get(handle, pool).generation.load(std::memory_order_acquire) == handle.generation;
+            return handle.valid() && Get(handle, pool).generation.load(std::memory_order_acquire) == handle.generation;
         }
 
         template<typename T>

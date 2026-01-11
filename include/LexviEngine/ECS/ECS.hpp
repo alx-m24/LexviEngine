@@ -98,14 +98,25 @@ namespace Lexvi {
                 }
 
                 template<Component EntityComponent>
-                std::expected<std::reference_wrapper<EntityComponent>, GetError> getComponent(const Entity& e) {
+                std::expected<std::reference_wrapper<EntityComponent>, GetError> getSafeComponent(const Entity& e) {
                     return GetComponentStorage<EntityComponent>(m_pool).get(e);
                 }
 
                 template<Component EntityComponent>
-               std::expected<std::reference_wrapper<const EntityComponent>, GetError> getComponentConst(const Entity& e) const {
+               std::expected<std::reference_wrapper<const EntityComponent>, GetError> getSafeComponentConst(const Entity& e) const {
                     return GetComponentStorageConst<EntityComponent>(m_pool).getConst(e);
                 }
+
+                template<Component EntityComponent>
+                EntityComponent& getComponent(const Entity& e) {
+                    return (*GetComponentStorage<EntityComponent>(m_pool).get(e)).get();
+                }
+
+                template<Component EntityComponent>
+                const EntityComponent& getComponentConst(const Entity& e) const {
+                    return (*GetComponentStorageConst<EntityComponent>(m_pool).getConst(e)).get();
+                }
+
 
             public:
                 // Funs Fn on every entity having Components EntityComponents...
@@ -125,8 +136,9 @@ namespace Lexvi {
                 template<Component First, Component... Others, typename Fn>
                 void ForEachConst(Fn&& fn) const {
                     const ComponentStorage<First>& first = GetComponentStorageConst<First>(m_pool);
-
+                    
                     for (const Entity& e : first.getEntitiesConst()) {
+                        // if (!e.valid()) continue;
                         if (!isAlive(e)) continue;
                         if (!HasComponents<Others...>(e)) continue;
                         

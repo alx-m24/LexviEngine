@@ -14,6 +14,7 @@ namespace Lexvi {
             private:
                 std::array<TBuffer, 2> m_buffers;
                 std::atomic<bool> m_writeBuffer{false};
+                std::atomic<size_t> m_bufferVersion{0};
 
                 SmartThread m_thread;
 
@@ -37,7 +38,8 @@ namespace Lexvi {
 
                         // Flip write buffer
                         bool currentWrite = m_writeBuffer.load(std::memory_order_relaxed);
-                        m_writeBuffer.store(!currentWrite, std::memory_order_release);
+                        m_writeBuffer.store(!currentWrite, std::memory_order_relaxed);
+                        m_bufferVersion.fetch_add(1, std::memory_order_release);
 
                         std::this_thread::sleep_until(start + interval);
                     }
@@ -50,9 +52,31 @@ namespace Lexvi {
                 }
 
             public:
+                struct OutBuffer {
+                    size_t version = 0;
+                    TBuffer buffer;
+                };
+
+                size_t getCurrentLatestVersion() const {
+                    size_t bufferVersion = m_bufferVersion.load(std::memory_order_relaxed);
+                    return bufferVersion;
+                }
+
                 TBuffer getLatest() const {
                     bool buffer = !m_writeBuffer.load(std::memory_order_acquire);
                     return m_buffers[buffer];
+                }
+
+                std::optional<TBuffer> tryGetLatest(size_t& inPhysicsBufferVersion) {
+                    size_t bufferVersion = m_bufferVersion.load(std::memory_order_acquire);
+                    if (inPhysicsBufferVersion != bufferVersion) {
+                        inPhysicsBufferVersion = bufferVersion;
+                        
+                        bool buffer = !m_writeBuffer.load(std::memory_order_relaxed);
+                        return m_buffers[buffer];
+                    }
+
+                    return std::optional<TBuffer>{};
                 }
 
                 void RequestStop() {

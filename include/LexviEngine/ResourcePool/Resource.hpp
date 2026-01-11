@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <numbers>
 
 namespace Lexvi {
     namespace ResourcePool {
@@ -13,11 +14,11 @@ namespace Lexvi {
                 return id == h.id && generation == h.generation;
             }
 
-            static constexpr uint32_t InvalidId = UINT32_MAX;
-            static constexpr uint32_t InvalidGeneration = UINT32_MAX;
+            static constexpr uint32_t InvalidId = std::numeric_limits<uint32_t>::max();
+            static constexpr uint32_t InvalidGeneration = std::numeric_limits<uint32_t>::max();
 
-            constexpr bool valid() const {
-                return id != InvalidId;
+            bool valid() const {
+                return id != InvalidId && generation != InvalidGeneration;
             }
         };
 
