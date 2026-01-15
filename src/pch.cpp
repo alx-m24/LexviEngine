@@ -1,4 +1,3 @@
-// pch.cpp: source file corresponding to the pre-compiled header
+#include "LexviEngine/pch.h"
 
-#include "pch.h"
-
+// Optional, but recommended for MSVC

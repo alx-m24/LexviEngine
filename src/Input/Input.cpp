@@ -1,182 +1,120 @@
-#include "pch.h"
 
-#include "Input/Input.hpp"
+#include "LexviEngine/pch.h"
+#include "LexviEngine/Input/Input.hpp"
 
-using namespace Lexvi;
+namespace Lexvi {
+	namespace Input {
+		namespace {
+            constexpr size_t KeysNum = 120;
+    		constexpr size_t MaxGLFWKeys = 348 + 1;
 
-Lexvi::Input::KeyState Input::getKeyState(int key) const
-{
-    auto it = keys.find(key);
-    if (it == keys.end()) {
-        return {false, false, false};
-    }
+    		constexpr size_t MouseButtonNum = 8;
+    		constexpr size_t MaxGLFWMouseButtons = 7 + 1;
 
-    return it->second;
-}
+			std::bitset<MaxGLFWKeys> keysDown{};
+            std::bitset<MaxGLFWKeys> keysDownLastFrame{};
+			std::bitset<MaxGLFWKeys> keysRepeat{};
+			std::bitset<MaxGLFWMouseButtons> mouseButtons{};
+			    
+			glm::vec2 mousePos{};
+			glm::vec2 lastMousePos{};
+			glm::vec2 mouseDelta{};
 
-Lexvi::Input::MouseButtonState Lexvi::Input::getMouseButtonState(int button) const
-{
-    auto it = mouseButtons.find(button);
-    if (it == mouseButtons.end()) {
-        return { false, false, false };
-    }
+            float mouseScroll = 0.0f;
 
-    return it->second;
-}
+			bool firstMouseCallback = true;
+		}
 
-void Lexvi::Input::BufferUpdates()
-{
-    mouseDelta = glm::vec2(0.0f);
-    lastmousePos = mousePos;
-    scrollDeltaY = 0.0f;
 
-    for (auto& key_state_pair : keys) {
-        key_state_pair.second.wasPressed = key_state_pair.second.isPressed;
-        key_state_pair.second.isHeld = false;
-    }
+		void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+			// We will ignore MODS and SCANCODE
+			//
+			// key == GLFW_KEY_~
+			// Action == GLFW_PRESS || GLFW_RELEASE || GLFW_REPEAT
+			
+			if (key < 0 || key >= MaxGLFWKeys) return;
 
-    for (auto& button_state_pair : mouseButtons) {
-        button_state_pair.second.wasPressed = button_state_pair.second.isPressed;
-    }
+			size_t keyIndex = static_cast<size_t>(key);
+			if (action == GLFW_RELEASE) {
+				keysDown.reset(keyIndex);
+				keysRepeat.reset(keyIndex);
+			}
+			else if (action == GLFW_REPEAT) {
+				keysRepeat.set(keyIndex);
+			}
+			else if (action == GLFW_PRESS) {
+				keysDown.set(keyIndex);
+			}
+		}
 
-    glfwPollEvents();
-}
+		void MousePositionCallback(GLFWwindow* window, double xpos, double ypos) {
+			mousePos = glm::vec2(static_cast<float>(xpos), static_cast<float>(ypos));
 
-bool Input::isKeyHeld(int key) const
-{
-    const KeyState state = getKeyState(key);
-    return state.isPressed && state.wasPressed;
-}
+			if (firstMouseCallback) {
+				firstMouseCallback = false;
+				lastMousePos = mousePos;
+			}
+		}
 
-bool Input::isKeyRepeat(int key) const
-{
-    const KeyState state = getKeyState(key);
-    return state.isHeld;
-}
+		void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+            if (button < 0 || button >= MaxGLFWMouseButtons) return;
 
-bool Input::isKeyReleased(int key) const
-{
-    const KeyState state = getKeyState(key);
-    return !state.isPressed && state.wasPressed;
-}
+            size_t buttonIndex = static_cast<size_t>(button);
+            if (action == GLFW_RELEASE) {
+                mouseButtons.reset(buttonIndex);
+            }
+            else if (action == GLFW_PRESS) {
+                mouseButtons.set(buttonIndex);
+            }
+		}
+		
+		void MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) { 
+            mouseScroll += static_cast<float>(yoffset);
+		}
 
-bool Input::isKeyStartedHold(int key) const
-{
-    const KeyState state = getKeyState(key);
-    return state.isPressed && !state.wasPressed;
-}
+        bool isKeyDown(Key key) {
+            return keysDown.test(static_cast<size_t>(key));
+        }
+        
+        bool wasKeyReleased(Key key) {
+            size_t k = static_cast<size_t>(key);
+            return keysDownLastFrame.test(k) && !keysDown.test(k);
+        }
 
-bool Lexvi::Input::isMouseButtonPressed(int button) const
-{
-    MouseButtonState state = getMouseButtonState(button);
-    return state.isPressed && !state.wasPressed;
-}
+        bool wasKeyPressed(Key key) {
+            size_t k = static_cast<size_t>(key);
+            return !keysDownLastFrame.test(k) && keysDown.test(k);
+        }
 
-bool Lexvi::Input::isMouseButtonHeld(int button) const
-{
-    MouseButtonState state = getMouseButtonState(button);
-    return state.isPressed && state.wasPressed;
-}
+        bool isKeyRepeat(Key key) {
+            return keysRepeat.test(static_cast<size_t>(key));
+        }
 
-bool Lexvi::Input::isMouseButtonReleased(int button) const
-{
-    MouseButtonState state = getMouseButtonState(button);
-    return !state.isPressed && state.wasPressed;
-}
+        bool isMouseButtonDown(MouseButton mouse) {
+            return mouseButtons.test(static_cast<size_t>(mouse));
+        }
 
-glm::vec2 Lexvi::Input::getMousePosition() const
-{
-    return mousePos;
-}
+        float getScrollDelta() {
+            return mouseScroll;
+        }
 
-glm::vec2 Lexvi::Input::getMouseDelta() const
-{
-    return mouseDelta;
-}
+        glm::vec2 getMousePosition() {
+            return mousePos;
+        }
+        
+        glm::vec2 getMouseDelta() {
+            return mouseDelta;
+        }
 
-float Lexvi::Input::getScrollWheelDelta() const
-{
-    return scrollDeltaY;
-}
+        void CalculateDeltas() {
+            mouseDelta = (firstMouseCallback) ? glm::vec2(0.0f) : mousePos - lastMousePos;
+            lastMousePos = mousePos;
+        }
 
-unsigned int Lexvi::Input::getScreenWidth() const
-{
-    return SCR_WIDTH;
-}
-
-unsigned int Lexvi::Input::getScreenHeight() const
-{
-    return SCR_HEIGHT;
-}
-
-void Lexvi::Input::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    Lexvi::Input* input = reinterpret_cast<Lexvi::Input*>(glfwGetWindowUserPointer(window));
-    if (!input) return;
-
-    input->SCR_WIDTH = width;
-    input->SCR_HEIGHT = height;
-
-    ResizeEvent e{ width, height };
-    for (auto& cb : input->resizeCallbacks) cb(e);
-}
-
-void Lexvi::Input::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    Lexvi::Input* input = reinterpret_cast<Lexvi::Input*>(glfwGetWindowUserPointer(window));
-    if (!input) return;
-
-    // xoffset = horizontal wheel, yoffset = vertical wheel
-    input->scrollDeltaY += (float)yoffset;
-}
-
-void Lexvi::Input::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-    Lexvi::Input* input = reinterpret_cast<Lexvi::Input*>(glfwGetWindowUserPointer(window));
-    if (!input) return;
-
-    input->lastmousePos = input->mousePos;
-
-    input->mousePos.x = static_cast<float>(xposIn);
-    input->mousePos.y = static_cast<float>(yposIn);
-
-    if (input->firstMouse)
-    {
-        input->lastmousePos = input->mousePos;
-        input->firstMouse = false;
-    }
-    input->mouseDelta = input->mousePos - input->lastmousePos;
-}
-
-void Lexvi::Input::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    Lexvi::Input* input = reinterpret_cast<Lexvi::Input*>(glfwGetWindowUserPointer(window));
-    if (!input) return;
-
-    KeyState& state = input->keys[key]; // inserts if missing
-
-    if (action == GLFW_PRESS) {
-        state.isPressed = true;
-    }
-    else if (action == GLFW_RELEASE) {
-        state.isPressed = false;
-    }
-    else if (action == GLFW_REPEAT) {
-        state.isHeld = true;
-    }
-}
-
-void Lexvi::Input::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-{
-    Lexvi::Input* input = reinterpret_cast<Lexvi::Input*>(glfwGetWindowUserPointer(window));
-    if (!input) return;
-
-    MouseButtonState& state = input->mouseButtons[button]; // inserts if missing
-
-    if (action == GLFW_PRESS) {
-        state.isPressed = true;
-    }
-    else if (action == GLFW_RELEASE) {
-        state.isPressed = false;
-    }
+        void ClearFrameData() {
+			keysRepeat.reset();
+            keysDownLastFrame = keysDown;
+            mouseScroll = 0.0f;
+        }
+	}
 }
