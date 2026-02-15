@@ -13,6 +13,8 @@
 *.out
 *.exe
 
+# Later renderer stuff here
+
 # Python venv files
 venv/
 Scripts/venv/
