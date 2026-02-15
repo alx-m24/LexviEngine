@@ -1,5 +1,5 @@
-#include "pch.hpp" 
-#include "Renderer/Buffer/Buffer.hpp"
+#include "LexviEngine/pch.hpp" 
+#include "LexviEngine/Renderer/Buffer/Buffer.hpp"
 
 vk::BufferUsageFlags Buffer::getUsageFlags(BufferUsage usage) {
     switch (usage) {

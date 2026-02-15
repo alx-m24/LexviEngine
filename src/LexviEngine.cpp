@@ -1,4 +1,4 @@
-#include "LexviEngine/pch.h"
+#include "LexviEngine/pch.hpp"
 #include "LexviEngine/LexviEngine.hpp"
 #include "LexviEngine/Input/Input.hpp"
 #include "LexviEngine/Time/Time.hpp"

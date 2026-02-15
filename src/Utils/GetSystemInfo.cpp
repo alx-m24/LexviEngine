@@ -1,7 +1,7 @@
 #include "LexviEngine/Utils/GetSystemInfo.hpp"
 #include "LexviEngine/Window/Window.hpp"
 
-#include "LexviEngine/pch.h"
+#include "LexviEngine/pch.hpp"
 
 namespace Lexvi {
 	std::expected<SystemInfo, SystemInfoError> getSystemInfo() noexcept  {

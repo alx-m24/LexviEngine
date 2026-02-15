@@ -1,12 +1,12 @@
-#include "pch.hpp" 
-#include "Renderer/Renderer.hpp"
+#include "LexviEngine/pch.hpp" 
+#include "LexviEngine/Renderer/Renderer.hpp"
 
-#include "Utils.hpp"
-#include "Renderer/Shader/Shader.hpp"
-#include "Renderer/Vertex/VertexInfo.hpp"
-#include "Renderer/Renderer-Exceptions.hpp"
-#include "Renderer/Rasterizer/Rasterizer.hpp"
-#include "Renderer/Pipeline/PipelineDescription.hpp"
+#include "LexviEngine/Utils.hpp"
+#include "LexviEngine/Renderer/Shader/Shader.hpp"
+#include "LexviEngine/Renderer/Vertex/VertexInfo.hpp"
+#include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
+#include "LexviEngine/Renderer/Rasterizer/Rasterizer.hpp"
+#include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
 
 static vk::raii::ShaderModule CreateShaderModule(const ByteArray& code, const vk::raii::Device& device) {
     assert(code.size() % 4 == 0 && "SPIR-V size must be multiple of 4");

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ImageResource.hpp"
-#include "RenderPass.hpp"
+#include "LexviEngine/Renderer/RenderGraph/ImageResource.hpp"
+#include "LexviEngine/Renderer/RenderGraph/RenderPass.hpp"
 
 #include <list>
 #include <memory>

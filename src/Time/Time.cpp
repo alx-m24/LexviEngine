@@ -1,4 +1,4 @@
-#include "LexviEngine/pch.h"
+#include "LexviEngine/pch.hpp"
 #include "LexviEngine/Time/Time.hpp"
 
 namespace Lexvi {

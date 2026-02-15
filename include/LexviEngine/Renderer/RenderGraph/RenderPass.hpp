@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ImageResource.hpp"
-#include "Renderer/Buffer/BufferDescription.hpp"
-#include "Renderer/Pipeline/PipelineDescription.hpp"
+#include "LexviEngine/Renderer/Buffer/BufferDescription.hpp"
+#include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
 
 #include <unordered_map>
 

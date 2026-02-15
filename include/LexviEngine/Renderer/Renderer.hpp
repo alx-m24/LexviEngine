@@ -4,9 +4,10 @@
 #include <vector>
 
 #include <vma/vk_mem_alloc.h>
-#include "Pipeline/PipelineDescription.hpp"
-#include "Renderer/Shader/Shader.hpp"
-#include "Buffer/Buffer.hpp"
+
+#include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
+#include "LexviEngine/Renderer/Shader/Shader.hpp"
+#include "LexviEngine/Renderer/Buffer/Buffer.hpp"
 
 // Forward Declarations
 class GLFWwindow;

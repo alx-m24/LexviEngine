@@ -1,8 +1,8 @@
-#include "pch.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Renderer/Renderer-Exceptions.hpp"
+#include "LexviEngine/pch.hpp"
+#include "LexviEngine/Utils.hpp"
+#include "LexviEngine/Renderer/Renderer.hpp"
+#include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
 #include <vma/vk_mem_alloc.h>
-#include "Utils.hpp"
 
 namespace InitialValues {
     constexpr vk::Extent2D windowSize = {

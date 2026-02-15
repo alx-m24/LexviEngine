@@ -1,9 +1,9 @@
-#include "pch.hpp"
+#include "LexviEngine/pch.hpp"
 
-#include "Renderer/Renderer.hpp"
-#include "Renderer/Renderer-Exceptions.hpp"
+#include "LexviEngine/Renderer/Renderer.hpp"
+#include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
 
-#include "Utils.hpp"
+#include "LexviEngine/Utils.hpp"
 
 static std::optional<vk::raii::PhysicalDevice> getSuitableDevice(const std::vector<vk::raii::PhysicalDevice>& availableDevices) {
     auto deviceItr = std::ranges::find_if(availableDevices,

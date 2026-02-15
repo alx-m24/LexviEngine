@@ -1,5 +1,4 @@
-
-#include "LexviEngine/pch.h"
+#include "LexviEngine/pch.hpp"
 #include "LexviEngine/Input/Input.hpp"
 
 namespace Lexvi {

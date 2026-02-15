@@ -1,4 +1,4 @@
-#include <LexviEngine/pch.h>
+#include <LexviEngine/pch.hpp>
 #include <LexviEngine/Window/Window.hpp>
 #include <LexviEngine/Input/Input.hpp>
 
@@ -40,7 +40,7 @@ namespace Lexvi {
 		glfwMakeContextCurrent(m_window);
 		glfwSwapInterval(static_cast<int>(m_windowInfo.VSYNC));
 		
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		if (!true) {
 			return WindowError::GLAD_INIT_FAIL;
 		}
 

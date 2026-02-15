@@ -2,10 +2,10 @@
 
 #include <type_traits>
 
-#include "Renderer/Shader/Shader.hpp"
-#include "Renderer/Vertex/VertexInfo.hpp"
-#include "Renderer/Rasterizer/Rasterizer.hpp"
-#include "Renderer/Rasterizer/Rasterizer.hpp"
+#include "LexviEngine/Renderer/Shader/Shader.hpp"
+#include "LexviEngine/Renderer/Vertex/VertexInfo.hpp"
+#include "LexviEngine/Renderer/Rasterizer/Rasterizer.hpp"
+#include "LexviEngine/Renderer/Rasterizer/Rasterizer.hpp"
 
 enum class SampleCount {
     ONE = 0,

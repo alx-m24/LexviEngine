@@ -1,9 +1,9 @@
-#include "pch.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Renderer/RenderGraph/RenderGraph.hpp"
-#include "Renderer/Buffer/BufferDescription.hpp"
-#include "Renderer/Pipeline/Pipeline.hpp"
-#include "Renderer/Pipeline/PipelineDescription.hpp"
+#include "LexviEngine/pch.hpp"
+#include "LexviEngine/Renderer/Renderer.hpp"
+#include "LexviEngine/Renderer/RenderGraph/RenderGraph.hpp"
+#include "LexviEngine/Renderer/Buffer/BufferDescription.hpp"
+#include "LexviEngine/Renderer/Pipeline/Pipeline.hpp"
+#include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
 
 void Renderer::SetRenderGraph(std::unique_ptr<RenderGraph::RenderGraph> renderGraph) {
     m_renderGraph = std::move(renderGraph);

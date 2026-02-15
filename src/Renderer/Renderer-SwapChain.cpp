@@ -1,7 +1,7 @@
-#include "pch.hpp"
-#include "Renderer/Renderer.hpp"
-#include "Renderer/RenderGraph/RenderGraph.hpp"
-#include "Renderer/Renderer-Exceptions.hpp"
+#include "LexviEngine/pch.hpp"
+#include "LexviEngine/Renderer/Renderer.hpp"
+#include "LexviEngine/Renderer/RenderGraph/RenderGraph.hpp"
+#include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
 
 static vk::Extent2D ChooseSwapChainExtent(GLFWwindow* const window, const vk::SurfaceCapabilitiesKHR& surfaceCapabilities) {
     if (surfaceCapabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {

@@ -22,15 +22,9 @@
 venv/
 Scripts/venv/
 
-<<<<<<< HEAD
-=======
 # Profiling stuff
 profiling/
 
-# Third party libraries
-third_party/
-
->>>>>>> renderer-branch
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt

@@ -1,4 +1,4 @@
-#include "LexviEngine/pch.h"
+#include "LexviEngine/pch.hpp"
 #include "LexviEngine/Threading/ThreadRegistry.hpp"
 
 namespace Lexvi {
