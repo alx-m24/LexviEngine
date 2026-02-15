@@ -13,12 +13,24 @@
 *.out
 *.exe
 
+<<<<<<< HEAD
 # Later renderer stuff here
 
+=======
+>>>>>>> renderer-branch
 # Python venv files
 venv/
 Scripts/venv/
 
+<<<<<<< HEAD
+=======
+# Profiling stuff
+profiling/
+
+# Third party libraries
+third_party/
+
+>>>>>>> renderer-branch
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt
