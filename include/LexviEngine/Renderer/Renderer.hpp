@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <vma/vk_mem_alloc.h>
+#include <vulkan/vulkan_raii.hpp>
 
 #include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
 #include "LexviEngine/Renderer/Shader/Shader.hpp"
@@ -17,19 +18,6 @@ namespace RenderGraph {
 }
 namespace Extensions {
     struct Extension;
-}
-namespace vk {
-    namespace raii {
-        class Instance;
-        class Context;
-        class ExtensionProperties;
-    }
-    class PipelineShaderStageCreateInfo;
-    class GraphicsPipelineCreateInfo;
-    class PipelineRenderingCreateInfo;
-
-    template<typename... Ts>
-    class StructureChain;
 }
 
 namespace DeviceExtensions {
@@ -46,7 +34,13 @@ namespace DeviceExtensions {
     };
 }
 
+namespace Lexvi {
+    class LexviEngine;
+}
+
 class Renderer {
+    friend class Lexvi::LexviEngine;
+
     private:
         GLFWwindow* m_window = nullptr;
 
@@ -79,10 +73,7 @@ class Renderer {
         std::vector<vk::raii::Semaphore> m_presentCompleteSemaphores;
         std::vector<vk::raii::Semaphore> m_renderFinishedSemaphores;
 
-        std::unique_ptr<RenderGraph::RenderGraph> m_renderGraph;
-
-        std::vector<std::shared_ptr<Pipeline>> m_pipelines;
-        std::vector<std::shared_ptr<Buffer>> m_buffers;
+        std::shared_ptr<RenderGraph::RenderGraph> m_renderGraph;
 
         VmaAllocator m_allocator{};
         
@@ -102,6 +93,10 @@ class Renderer {
         bool m_frameBufferResized = false;
 
     public:
+        Renderer();
+        ~Renderer();
+
+    private:
         enum class InitResult : uint8_t {
             OK = 0,
             INSTANCE_FAILED,
@@ -145,7 +140,7 @@ class Renderer {
         void CleanupSwapChain();
 
     public:
-        void SetRenderGraph(std::unique_ptr<RenderGraph::RenderGraph> renderGraph);
+        void SetRenderGraph(std::shared_ptr<RenderGraph::RenderGraph> renderGraph);
 
     private:
         void CreateCommandPool();
@@ -167,9 +162,9 @@ class Renderer {
 
     public:
         template<Buffer_T T, typename... Args>
-        std::shared_ptr<T> CreateBuffer(Args&&... args) {
-            std::shared_ptr<T> buffer = std::make_shared<T>(std::forward<Args>(args)...);
-
+        std::unique_ptr<T> CreateBuffer(Args&&... args) {
+            std::unique_ptr<T> buffer = std::make_unique<T>(std::forward<Args>(args)...);
+        
             vk::BufferCreateInfo bufferInfo {
                 .size = buffer->size,
                 .usage = buffer->usage,
@@ -177,19 +172,15 @@ class Renderer {
             
             VmaAllocationCreateInfo allocInfo{};
             allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-
+        
             vmaCreateBuffer(m_allocator, &*bufferInfo, &allocInfo, &buffer->buffer, &buffer->allocation, nullptr);
+            buffer->allocator = m_allocator;
 
-            m_buffers.push_back(buffer);
-            return buffer;
+            return std::move(buffer);
         }
-
+        
         template<Buffer_T T>
-        std::shared_ptr<T> CreateBuffer(const BufferDescription& desc) {
+        std::unique_ptr<T> CreateBuffer(const BufferDescription& desc) {
             return CreateBuffer<T>(desc.name, desc.size);
         }
-
-        template<typename T>
-        void UpdateUniform(const UniformBuffer& buffer, const T& data) const;
-
 };

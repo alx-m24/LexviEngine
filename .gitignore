@@ -13,11 +13,9 @@
 *.out
 *.exe
 
-<<<<<<< HEAD
-# Later renderer stuff here
+# Visual Studio
+.vs/
 
-=======
->>>>>>> renderer-branch
 # Python venv files
 venv/
 Scripts/venv/

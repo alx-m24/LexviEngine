@@ -11,8 +11,6 @@ add_library(${PROJECT_NAME}
     src/Application/ApplicationStack.cpp
 	src/Application/Application.cpp
 	src/Threading/ThreadRegistry.cpp
-	src/Utils/GetSystemInfo.cpp
-	src/Window/Window.cpp
     src/Time/Time.cpp
 	src/Input/Input.cpp
 	src/LexviEngine.cpp
@@ -31,6 +29,7 @@ add_library(${PROJECT_NAME}
     src/Renderer/Renderer-PipelineDescription.cpp
     src/Renderer/Renderer-Allocator.cpp
     src/Renderer/Buffer/Buffer.cpp
+    src/Renderer/RenderContext/RenderContext.cpp
     src/stbImplementation/stbImplementation.cpp
     src/vmaImplementation/vma.cpp
 )
@@ -41,13 +40,13 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE include/LexviEngine/pch.hpp)
 # ---- Vulkan ----
 find_package(Vulkan REQUIRED)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE
+target_compile_definitions(${PROJECT_NAME} PUBLIC
     # VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
     VULKAN_HPP_NO_STRUCT_CONSTRUCTORS=1
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE Vulkan::Vulkan
+    PUBLIC Vulkan::Vulkan
 )
 
 # ---- FetchContent ----
@@ -75,7 +74,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE glfw glm
+    PUBLIC
+        glfw
+        glm
 )
 
 # STB
@@ -94,13 +95,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(vma)
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/include
-    PRIVATE ${CMAKE_SOURCE_DIR}/third_party
-            ${Vulkan_INCLUDE_DIRS}
-            ${glfw_SOURCE_DIR}/include
-            ${glm_SOURCE_DIR}
-            ${stb_SOURCE_DIR}
-            ${vma_SOURCE_DIR}/include
+    PUBLIC 
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PRIVATE
+        ${glm_SOURCE_DIR}
+        ${vma_SOURCE_DIR}/include
+        ${Vulkan_INCLUDE_DIRS}
+        ${glfw_SOURCE_DIR}/include
+        ${stb_SOURCE_DIR}
 )
 
 # ---- MinGW runtime DLL copy (Windows only) ----

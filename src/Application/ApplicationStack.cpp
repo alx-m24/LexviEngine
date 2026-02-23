@@ -36,6 +36,8 @@ namespace Lexvi {
         if (m_pushTransitioning) { // Run OnPush for top layer && update it 
             auto& top = m_Layers.back();
             
+            top->Update();
+
             double startTransitionTime = m_pushTransitionStart.back();
             auto transitionState = top->OnPush(static_cast<float>(Time::GetTime() - startTransitionTime));
             if (transitionState == ApplicationLayer::TransitionState::Completed) {
@@ -45,10 +47,11 @@ namespace Lexvi {
                 m_pushTransitionStart.pop_back();
             }
 
-            top->Update();
         }
         if (m_popTransitioning) { // Run OnPop for top layer && update layer right under
             auto& top = m_Layers.back();
+
+            top->Update();
 
             double startTransitionTime = m_popTransitionStart.back();
             auto transitionState = top->OnPop(static_cast<float>(Time::GetTime() - startTransitionTime));
@@ -67,18 +70,6 @@ namespace Lexvi {
                         m_currentLayer = nullptr;
                     }
             }
-            else top->Update();
-        }
-	}
-
-	void ApplicationStack::RenderActive()
-	{
-		if (m_Layers.empty()) return;
-
-        if (m_currentLayer) m_currentLayer->Render();
-
-        if (m_pushTransitioning || m_popTransitioning) {
-            m_Layers.back()->Render();
         }
 	}
 

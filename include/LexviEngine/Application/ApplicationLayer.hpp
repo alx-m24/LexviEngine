@@ -27,7 +27,6 @@ namespace Lexvi {
 	    	virtual void Reload() = 0;
 
 	    	virtual void Update() = 0;
-	    	virtual void Render() = 0;
 
 	    	virtual void Shutdown() = 0;
 
@@ -38,8 +37,8 @@ namespace Lexvi {
             };
 
             // Transitions (optional): returns true if transition over
-            virtual TransitionState OnPush(float secondsSincePushed) { return TransitionState::Completed; }
-            virtual TransitionState OnPop(float secondsSincePopped) { return TransitionState::Completed; }
+            virtual TransitionState OnPush([[maybe_unused]] float secondsSincePushed) { return TransitionState::Completed; }
+            virtual TransitionState OnPop([[maybe_unused]] float secondsSincePopped) { return TransitionState::Completed; }
 	};
 
 	template<typename T>

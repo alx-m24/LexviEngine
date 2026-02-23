@@ -1,6 +1,6 @@
 #pragma once 
 
-#include <vk_mem_alloc.h>
+#include <vma/vk_mem_alloc.h>
 
 #include "BufferDescription.hpp"
 
@@ -12,6 +12,8 @@ class Buffer {
         VkBuffer buffer = VK_NULL_HANDLE;
         VmaAllocation allocation = {};
         vk::BufferUsageFlags usage = {};
+        
+        VmaAllocator allocator = VK_NULL_HANDLE;
 
     public:
         size_t size = 0;
@@ -24,6 +26,50 @@ class Buffer {
         Buffer(const std::string& name, BufferUsage bufferUsage) : name(name), usage(getUsageFlags(bufferUsage)) {}
         Buffer(const std::string& name, size_t size, BufferUsage bufferUsage) : name(name), usage(getUsageFlags(bufferUsage)), size(size) {}
 
+        ~Buffer() {
+            if (buffer) {
+                vmaDestroyBuffer(allocator, buffer, allocation);
+                buffer = VK_NULL_HANDLE;
+            }
+        }
+
+        Buffer(const Buffer&) = delete;
+        void operator=(const Buffer&) = delete;
+
+        Buffer(Buffer&& other) {
+            this->name = std::move(other.name);
+            this->buffer = other.buffer;
+            this->allocation = other.allocation;
+            this->usage = other.usage;
+            this->allocator = other.allocator;
+
+            other.buffer = VK_NULL_HANDLE;
+            other.name = "";
+            other.allocation = {};
+            other.usage = {};
+            other.allocator = VK_NULL_HANDLE;
+        }
+        Buffer& operator=(Buffer&& other) {
+            if (this != &other) {
+                if (buffer) {
+                    vmaDestroyBuffer(allocator, buffer, allocation);
+                }
+
+                this->name = std::move(other.name);
+                this->buffer = other.buffer;
+                this->allocation = other.allocation;
+                this->usage = other.usage;
+                this->allocator = other.allocator;
+
+                other.buffer = VK_NULL_HANDLE;
+                other.name = "";
+                other.allocation = {};
+                other.usage = {};
+            }
+
+            return *this;
+        }
+
     private:
         static vk::BufferUsageFlags getUsageFlags(BufferUsage usage);
 
@@ -31,7 +77,10 @@ class Buffer {
         std::string getName() const { return name; }
 
         bool operator==(const Buffer& other) const {
-            return name == other.name;
+            return name == other.name && size == other.size && usage == other.usage;
+        }
+        bool operator==(const BufferDescription& desc) const {
+            return name == desc.name && size == desc.size && usage == getUsageFlags(desc.usage);
         }
 };
 

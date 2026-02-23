@@ -1,63 +1,48 @@
 #include "LexviEngine/pch.hpp"
 #include "LexviEngine/LexviEngine.hpp"
-#include "LexviEngine/Input/Input.hpp"
+
 #include "LexviEngine/Time/Time.hpp"
+#include "LexviEngine/Input/Input.hpp"
 #include "LexviEngine/Logging/Logging.hpp"
-#include "LexviEngine/Utils/GetSystemInfo.hpp"
+#include "LexviEngine/Renderer/Renderer.hpp"
+#include "LexviEngine/Renderer/RenderGraph/RenderGraph.hpp"
 #include "LexviEngine/Threading/ThreadRegistry.hpp"
 
 namespace Lexvi { 
-	bool LexviEngine::Init() {	
-		auto err = Thread::RegisterThread("Main");
 
-		auto sysInfo_expected = getSystemInfo();
-
-		if (!sysInfo_expected) {
-			Log("Failed to get system info");
-			return false;
-		}
-		SystemInfo sysInfo = *sysInfo_expected;
-		Log("OpenGL version: {}.{}", sysInfo.glMajorVersion, sysInfo.glMinorVersion);
-
-		auto windowError = m_window.Init(WindowInfo {
-				.size = {800, 600},
-				.title = "Test",
-				.VSYNC = true,
-				.visible = true,
-				.systemInfo = sysInfo
-				});
-
-		if (windowError != WindowError::OK) {
-			Log("{}{}", "Failed to init window: ", GetErrorString(windowError));
-			return false;
-		}
-
+    template<typename T>
+    requires std::is_base_of_v<Application, T>
+	[[nodiscard]] bool LexviEngine::Init(const std::string_view title) {
         Time::Init();
 
-        m_app->SetWindow(&m_window);
-		m_app->Init();
+		[[maybe_unused]] auto err = Thread::RegisterThread("Main");
+        
+        m_renderer.Init(std::string(title));
+
+        m_app = std::make_unique<T>(m_renderer);
+        m_app->Init();
 
 		return true;
 	}
 
 	void LexviEngine::Shutdown() {
 		m_app->FullShutdown();
+        m_renderer.Shutdown();
 	}
 
 	void LexviEngine::Run() {
-		while (m_app->isRunning() && m_window.isOpen()) {
+		while (m_app->isRunning() && m_renderer.isRunning()) {
             Time::Update();
 
-			m_window.ProcessCallbacks();
+            m_renderer.Update();
+
             Input::CalculateDeltas();
 
 			m_app->Update();
 
             Input::ClearFrameData();
 
-			m_app->Render();
-
-			m_window.SwapBuffers();
+            m_renderer.Render();
 		}
 
     }

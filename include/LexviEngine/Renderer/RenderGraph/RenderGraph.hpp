@@ -5,7 +5,8 @@
 
 #include <list>
 #include <memory>
-// #include <ranges>
+#include <ranges>
+#include <expected>
 #include <string>
 #include <vector>
 #include <utility>
@@ -26,24 +27,28 @@ namespace RenderGraph {
     enum class GetResourceError : uint8_t {
         DOES_NOT_EXISTS
     };
-    enum class BindResourceResult : uint8_t {
+    enum class SetResourceResult : uint8_t {
         OK = 0,
         DOES_NOT_EXISTS
     };
 
     class RenderGraph {
-        private:
-            std::unordered_map<std::string, ImageResource> m_resources;
-
         public:
+            friend class ::Renderer;
+
             using UnsortedNodes = std::list<std::unique_ptr<RenderPass>>;
             using OrderedNodes = std::vector<std::unique_ptr<RenderPass>>;
 
         private:
             std::variant<UnsortedNodes, OrderedNodes> m_nodes;
 
+        private:
+            std::unordered_map<std::string, ImageResource> m_resources;
+
         public:
-            RenderGraph() : m_nodes(UnsortedNodes{}) {}
+            RenderGraph() : m_nodes(UnsortedNodes{ }) {
+                m_resources.insert({ "BackBuffer", ImageResource{} });
+            }
 
         public:
             template<typename... Args>
@@ -84,16 +89,14 @@ namespace RenderGraph {
             }
 
         public:
-            BindResourceResult BindExternalResource(const std::string& name, vk::Image image, vk::ImageView imageView) {
+            SetResourceResult SetResource(const std::string& name, ImageResource&& resource) {
                 auto _resource = getResource(name);
-                if (!_resource) return BindResourceResult::DOES_NOT_EXISTS;
+                if (!_resource) return SetResourceResult::DOES_NOT_EXISTS;
             
                 ImageResource& res = _resource.value().get();
-                res.image = image;
-                res.view = imageView;
-                res.initialLayout = vk::ImageLayout::eUndefined;
+                res = std::forward<ImageResource>(resource);
             
-                return BindResourceResult::OK;
+                return SetResourceResult::OK;
             }
 
         public:
@@ -123,7 +126,7 @@ namespace RenderGraph {
                 return getResource(name).value().get();
             }
 
-        public:
+        private:
             CompileResult Compile() {
                 if (std::holds_alternative<OrderedNodes>(m_nodes)) {
                     return CompileResult::ALREADY_COMPILED;
@@ -179,16 +182,16 @@ namespace RenderGraph {
                 return CompileResult::OK;
             }
 
-        public:
+        private:
             enum class GetNodesError {
                 NOT_COMPILED,
                 NO_NODES
             };
-            std::expected<std::reference_wrapper<const OrderedNodes>, GetNodesError> getOrderedNodes() const {
+            std::expected<std::reference_wrapper<OrderedNodes>, GetNodesError> getOrderedNodes() const {
                 if (std::holds_alternative<UnsortedNodes>(m_nodes)) {
                     return std::unexpected(RenderGraph::GetNodesError::NOT_COMPILED);
                 }
-                const OrderedNodes& nodes = std::get<OrderedNodes>(m_nodes);
+                OrderedNodes& nodes = const_cast<OrderedNodes&>(std::get<OrderedNodes>(m_nodes));
 
                 if (nodes.empty()) {
                     return std::unexpected(RenderGraph::GetNodesError::NO_NODES);
@@ -198,7 +201,7 @@ namespace RenderGraph {
             }
 
             OrderedNodes& getOrderedNodesUnsafe() {
-                return const_cast<OrderedNodes&>(getOrderedNodes().value().get());
+                return (*getOrderedNodes()).get();
             }
     };
 }

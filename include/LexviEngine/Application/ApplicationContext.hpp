@@ -6,17 +6,13 @@ namespace Lexvi {
 	public:
 		ApplicationContext() = default;
 
-		// Not copyable or movable
+		// Not copyable
 		ApplicationContext(const ApplicationContext&) = delete;
 		ApplicationContext& operator=(const ApplicationContext&) = delete;
 
-		ApplicationContext(ApplicationContext&&) = delete;
-		ApplicationContext& operator=(ApplicationContext&&) = delete;
-
-
 		virtual ~ApplicationContext() = default;
-
-		virtual void Init() = 0;
-		virtual void Shutdown() = 0;
 	};
+
+    template<typename T>
+    concept ApplicationContext_T = std::is_base_of_v<ApplicationContext, T>;
 }

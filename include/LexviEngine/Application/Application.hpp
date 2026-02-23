@@ -1,19 +1,23 @@
 #pragma once
 
 #include "LexviEngine/Application/ApplicationStack.hpp"
-#include <LexviEngine/Window/Window.hpp>
+#include "LexviEngine/Renderer/RenderGraph/RenderGraph.hpp"
+
+class Renderer;
 
 namespace Lexvi {
 	class Application {
 		protected:
 			bool m_isRunning = true;
-            const Window* m_window;
 
 		protected:
 			ApplicationStack m_AppStack;
+            RenderGraph::RenderGraph m_renderGraph;
+
+            ::Renderer& m_renderer;
 	
         public:
-            Application() = default;
+            Application(Renderer& renderer) : m_renderer(renderer) {}
 			virtual ~Application() {};
 			
 		public:
@@ -26,12 +30,11 @@ namespace Lexvi {
 		public:
 			void Update();
 
-			void Render();
-
 			void FullShutdown();
 
 		public:
 			bool isRunning() const;
-            void SetWindow(const Window* window) { m_window = window; }
+
+            RenderGraph::RenderGraph& getRenderGraph() { return m_renderGraph; }
 	};
 }

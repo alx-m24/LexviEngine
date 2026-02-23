@@ -26,7 +26,6 @@ namespace Lexvi {
 	    	void PopApplicationLayer();
 
 	    	void UpdateActive();
-	    	void RenderActive();
 
 	    	void PopAll();
 	};

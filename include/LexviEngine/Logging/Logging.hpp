@@ -17,7 +17,7 @@ namespace Lexvi {
 
 		std::lock_guard lock(g_logMutex);
 		std::cout << "[" << threadName << "] "
-		       	<< std::vformat(fmt, std::make_format_args(args...))
+		       	<< std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...))
 		       	<< "\n";
 	}
 
@@ -27,5 +27,29 @@ namespace Lexvi {
 
 		std::lock_guard lock(g_logMutex);
 		std::cout << "[" << threadName << "] " << msg << "\n";
+
 	}
 }
+
+#ifndef NDEBUG
+
+#define DEBUG_LOG(...)                                              \
+    do {                                                            \
+        Lexvi::Log(__VA_ARGS__);                                           \
+    } while(false)
+
+#define LEXVI_ASSERT(cond, ...)                                     \
+    do {                                                            \
+        if (!(cond)) {                                              \
+            Lexvi::Log("Assertion Failed: {} ({}:{})", #cond, __FILE__, __LINE__);                     \
+            Lexvi::Log(__VA_ARGS__);                                       \
+            std::abort();                                           \
+        }                                                           \
+    } while (false)                                                 
+
+#else
+    
+#define DEBUG_LOG(...) do { } while (false)
+#define LEXVI_ASSERT(cond, ...) do { } while(false)
+
+#endif

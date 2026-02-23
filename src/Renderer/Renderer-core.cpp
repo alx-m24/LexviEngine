@@ -1,8 +1,9 @@
 #include "LexviEngine/pch.hpp"
 #include "LexviEngine/Utils.hpp"
+#include "LexviEngine/Input/Input.hpp"
 #include "LexviEngine/Renderer/Renderer.hpp"
 #include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
-#include <vma/vk_mem_alloc.h>
+#include "LexviEngine/Renderer/RenderGraph/RenderGraph.hpp"
 
 namespace InitialValues {
     constexpr vk::Extent2D windowSize = {
@@ -11,6 +12,9 @@ namespace InitialValues {
     };
 }
 
+Renderer::Renderer() = default;
+Renderer::~Renderer() = default;
+
 void Renderer::InitGLFW(const std::string& title) {
     glfwInit();
 
@@ -18,8 +22,14 @@ void Renderer::InitGLFW(const std::string& title) {
 
     m_window = glfwCreateWindow(InitialValues::windowSize.width, InitialValues::windowSize.height, title.c_str(), nullptr, nullptr);
 
+    using namespace Lexvi;
+
     glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, FrameBufferSizeCallback);
+    glfwSetCursorPosCallback(m_window, Input::MousePositionCallback);
+    glfwSetKeyCallback(m_window, Input::keyCallback);
+    glfwSetScrollCallback(m_window, Input::MouseScrollCallback);
+    glfwSetMouseButtonCallback(m_window, Input::MouseButtonCallback);
 }
 
 void Renderer::FrameBufferSizeCallback(GLFWwindow *window, int, int) {
@@ -72,9 +82,7 @@ void Renderer::Update() {
 void Renderer::Shutdown() {
     m_device.waitIdle();
 
-    for (const std::shared_ptr<Buffer>& buffer : m_buffers) {
-        vmaDestroyBuffer(m_allocator, buffer->buffer, buffer->allocation);
-    }
+    m_renderGraph.reset();
 
     if (m_allocator) {
         vmaDestroyAllocator(m_allocator);

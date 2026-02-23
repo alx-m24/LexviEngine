@@ -28,4 +28,3 @@ struct Rasterizer {
     PolygonMode polygonMode = PolygonMode::FILL;
     FaceCulling faceCulling {};
 };
-

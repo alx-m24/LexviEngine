@@ -12,10 +12,6 @@ namespace Lexvi {
 		m_AppStack.UpdateActive();
 	}
 
-	void Application::Render() {
-		m_AppStack.RenderActive();
-	}
-
 	void Application::FullShutdown() {
 		m_AppStack.PopAll();
 		Shutdown();

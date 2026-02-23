@@ -1,11 +1,13 @@
 #include "LexviEngine/pch.hpp"
+#include "LexviEngine/Logging/Logging.hpp"
 #include "LexviEngine/Renderer/Renderer.hpp"
 #include "LexviEngine/Renderer/RenderGraph/RenderPass.hpp"
 #include "LexviEngine/Renderer/RenderGraph/RenderGraph.hpp"
 #include "LexviEngine/Renderer/RenderGraph/ImageResource.hpp"
+#include "LexviEngine/Renderer/RenderContext/RenderContext.hpp"
 
 static void TransitionImageLayout(vk::raii::CommandBuffer& commandBuffer, vk::Image image, [[maybe_unused]] vk::Format format,
-        vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::ImageAspectFlags aspect) {
+    vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::ImageAspectFlags aspect) {
     vk::ImageMemoryBarrier barrier;
 
     barrier.setOldLayout(oldLayout)
@@ -29,9 +31,9 @@ static void TransitionImageLayout(vk::raii::CommandBuffer& commandBuffer, vk::Im
         sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;               // No previous work to wait for
         destinationStage = vk::PipelineStageFlagBits::eTransfer;           // Transfer operations can proceed
 
+    } 
     // Configure synchronization for transfer-to-shader layout transitions
     // This pattern prepares uploaded images for shader sampling
-    } 
     else if (oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
         // Configure memory access transition from writing to reading
         barrier.setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)       // Previous transfer writes must complete
@@ -81,7 +83,7 @@ static void TransitionImageLayout(vk::raii::CommandBuffer& commandBuffer, vk::Im
         destinationStage = vk::PipelineStageFlagBits::eBottomOfPipe;
     }
     else {
-        assert(false && "Unsupported image layout transition");
+        LEXVI_ASSERT(false, "Unsupported image layout transition");
     }
 
     commandBuffer.pipelineBarrier(
@@ -93,24 +95,24 @@ static void TransitionImageLayout(vk::raii::CommandBuffer& commandBuffer, vk::Im
         barrier);
 }
 
-static void transitionIfNeeded(vk::raii::CommandBuffer& cmd, ImageResource& res, bool isWrite) {
-    vk::ImageLayout newLayout = pickLayout(res, isWrite);
+void transitionIfNeeded(vk::raii::CommandBuffer& cmd, ImageResource& res, bool isWrite) {
+    vk::ImageLayout newLayout = res.pickLayout(isWrite ? ImageResource::ImageUsageIntent::WRITE : ImageResource::ImageUsageIntent::READ);
 
-    if (res.initialLayout == newLayout)
+    if (res.currentLayout == newLayout)
         return;
 
     TransitionImageLayout(
         cmd,
         res.image,
         res.format,
-        res.initialLayout,
+        res.currentLayout,
         newLayout,
         (res.usage & vk::ImageUsageFlagBits::eDepthStencilAttachment)
             ? vk::ImageAspectFlagBits::eDepth
             : vk::ImageAspectFlagBits::eColor
     );
 
-    res.initialLayout = newLayout;
+    res.currentLayout = newLayout;
 }
 
 void Renderer::Render() {
@@ -132,7 +134,17 @@ void Renderer::Render() {
 		assert(result == vk::Result::eTimeout || result == vk::Result::eNotReady);
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
-    m_renderGraph->BindExternalResource("BackBuffer", m_swapChainImages[imageIndex], m_swapChainImageViews[imageIndex]);
+
+    {
+        ImageResource backBuffer("BackBuffer");
+        backBuffer.format = m_SwapChainSurfaceFormat.format;
+        backBuffer.extent = m_swapChainExtent;
+        backBuffer.usage = vk::ImageUsageFlagBits::eColorAttachment;
+        backBuffer.currentLayout = vk::ImageLayout::eUndefined;
+        backBuffer.image = m_swapChainImages[imageIndex]; // friend access
+        backBuffer.view = m_swapChainImageViews[imageIndex]; // friend access
+        m_renderGraph->SetResource("BackBuffer", std::move(backBuffer));
+    }
 
     const RenderGraph::RenderGraph::OrderedNodes& nodes = m_renderGraph->getOrderedNodes()->get();
 
@@ -141,6 +153,8 @@ void Renderer::Render() {
     m_device.resetFences(*m_framesInFlightFence[frameIndex]);
     buffer.reset();
     buffer.begin({});
+
+    RenderContext ctx(buffer);
         
     for (const std::unique_ptr<RenderGraph::RenderPass>& node : nodes) {
         for (auto& [name, img] : node->readImages) {
@@ -151,10 +165,9 @@ void Renderer::Render() {
             transitionIfNeeded(buffer, *img, true);
         }
 
-        node->BeginPass(buffer);
-        node->RunPass(buffer);
-        node->EndPass(buffer);
-
+        node->BeginPass(ctx);
+        node->RunPass(ctx);
+        node->EndPass(ctx);
     }
     
     // Submits to present command buffer

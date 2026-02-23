@@ -10,4 +10,3 @@ vk::BufferUsageFlags Buffer::getUsageFlags(BufferUsage usage) {
 
     return {};
 }
-
