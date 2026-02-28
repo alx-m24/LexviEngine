@@ -28,6 +28,7 @@ add_library(${PROJECT_NAME}
     src/Renderer/Renderer-RenderGraph.cpp
     src/Renderer/Renderer-PipelineDescription.cpp
     src/Renderer/Renderer-Allocator.cpp
+    src/Renderer/Renderer-Buffer.cpp
     src/Renderer/Buffer/Buffer.cpp
     src/Renderer/RenderContext/RenderContext.cpp
     src/stbImplementation/stbImplementation.cpp

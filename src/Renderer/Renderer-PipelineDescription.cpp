@@ -6,6 +6,7 @@
 #include "LexviEngine/Renderer/Vertex/VertexInfo.hpp"
 #include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
 #include "LexviEngine/Renderer/Rasterizer/Rasterizer.hpp"
+#include "LexviEngine/Renderer/Pipeline/Pipeline.hpp"
 #include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
 
 static vk::raii::ShaderModule CreateShaderModule(const ByteArray& code, const vk::raii::Device& device) {
@@ -332,4 +333,12 @@ void Renderer::CreateVulkanPipeline(PipelineDescription desc, vk::raii::Pipeline
 	    {.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentFormats.size()), .pColorAttachmentFormats = colorAttachmentFormats.data()}};
 
     pipeline = vk::raii::Pipeline(m_device, nullptr, pipelineCreateInfoChain.get<vk::GraphicsPipelineCreateInfo>());
+}
+
+Pipeline Renderer::CreatePipeline(const PipelineDescription& desc) const {
+    Pipeline pipeline(desc.name);
+
+    CreateVulkanPipeline(desc, pipeline.pipeline, pipeline.pipelineLayout);
+
+    return pipeline;
 }

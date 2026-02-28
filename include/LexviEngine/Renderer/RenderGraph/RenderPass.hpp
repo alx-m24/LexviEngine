@@ -23,7 +23,7 @@ namespace RenderGraph {
             std::unordered_map<std::string, ImageResource*> readImages;
             std::unordered_map<std::string, ImageResource*> writeImages;
 
-            Renderer* renderer;
+            Renderer* renderer = nullptr;
 
         public:
             RenderPass(std::string&& name, const std::vector<std::string>& reads, const std::vector<std::string>& writes)
@@ -31,6 +31,8 @@ namespace RenderGraph {
             virtual ~RenderPass() = default;
 
         public:
+            virtual void Init(const Renderer& renderer) = 0;
+
             virtual void BeginPass(RenderContext& renderContext) = 0;
             virtual void RunPass(RenderContext& renderContext) = 0;
             virtual void EndPass(RenderContext& renderContext) = 0;

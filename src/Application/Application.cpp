@@ -1,4 +1,5 @@
 #include "LexviEngine/pch.hpp"
+#include "LexviEngine/Renderer/Renderer.hpp"
 #include "LexviEngine/Application/Application.hpp"
 
 namespace Lexvi {
@@ -8,11 +9,15 @@ namespace Lexvi {
 	}
 
 	void Application::Update() {
+
 		this->AppUpdate();
+
 		m_AppStack.UpdateActive();
 	}
 
 	void Application::FullShutdown() {
+        m_renderer.WaitIdle();
+
 		m_AppStack.PopAll();
 		Shutdown();
 	}

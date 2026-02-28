@@ -73,7 +73,9 @@ class Renderer {
         std::vector<vk::raii::Semaphore> m_presentCompleteSemaphores;
         std::vector<vk::raii::Semaphore> m_renderFinishedSemaphores;
 
-        std::shared_ptr<RenderGraph::RenderGraph> m_renderGraph;
+        std::weak_ptr<RenderGraph::RenderGraph> m_renderGraph;
+
+        std::vector<std::pair<TransferBuffer, vk::raii::Fence>> m_transferBuffers;
 
         VmaAllocator m_allocator{};
         
@@ -91,6 +93,7 @@ class Renderer {
 
     private:
         bool m_frameBufferResized = false;
+        std::function<void(glm::uvec2 extent)> m_resizeCallback;
 
     public:
         Renderer();
@@ -112,6 +115,10 @@ class Renderer {
         void Render();
 
         void Shutdown();
+
+    public:
+        using ResizeCallBackFunc = std::function<void(glm::uvec2 extent)>;
+        void SetResizeCallback(ResizeCallBackFunc&& func);
 
     public:
         bool isRunning() const;
@@ -140,7 +147,7 @@ class Renderer {
         void CleanupSwapChain();
 
     public:
-        void SetRenderGraph(std::shared_ptr<RenderGraph::RenderGraph> renderGraph);
+        void SetRenderGraph(std::weak_ptr<RenderGraph::RenderGraph> renderGraph);
 
     private:
         void CreateCommandPool();
@@ -161,26 +168,47 @@ class Renderer {
         std::vector<Extensions::Extension> getRequiredExtensions() const;
 
     public:
+        Pipeline CreatePipeline(const PipelineDescription& desc) const;
+
+    public:
+        void WaitIdle() const {
+            m_device.waitIdle();
+        }
+
+    public:
         template<Buffer_T T, typename... Args>
-        std::unique_ptr<T> CreateBuffer(Args&&... args) {
-            std::unique_ptr<T> buffer = std::make_unique<T>(std::forward<Args>(args)...);
+        T CreateBuffer(Args&&... args) const {
+            T buffer(std::forward<Args>(args)...);
         
             vk::BufferCreateInfo bufferInfo {
-                .size = buffer->size,
-                .usage = buffer->usage,
+                .size = buffer.size,
+                .usage = buffer.usage,
             };
             
             VmaAllocationCreateInfo allocInfo{};
             allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
         
-            vmaCreateBuffer(m_allocator, &*bufferInfo, &allocInfo, &buffer->buffer, &buffer->allocation, nullptr);
-            buffer->allocator = m_allocator;
+            vmaCreateBuffer(m_allocator, &*bufferInfo, &allocInfo, &buffer.buffer, &buffer.allocation, nullptr);
+            buffer.allocator = m_allocator;
 
-            return std::move(buffer);
+            return buffer;
         }
-        
-        template<Buffer_T T>
-        std::unique_ptr<T> CreateBuffer(const BufferDescription& desc) {
-            return CreateBuffer<T>(desc.name, desc.size);
+
+    public:
+        void CopyBuffer(TransferBuffer&& src, const Buffer& dst);
+
+    public:
+        void SetVertexData(const VertexBuffer& buffer, const void* data, size_t size);
+
+        void UpdateVertexData(const VertexBuffer& buffer, size_t offset, const void* data, size_t size) const;
+
+        template<typename T>
+        void UpdateUniform(const UniformBuffer& buffer, const T& data) const {
+            auto mapped = buffer.map<T>();
+            LEXVI_ASSERT(mapped, "Failed to map uniform buffer");
+            
+            MappedData<T>& mappedData = *mapped;
+
+            *mappedData = data;
         }
 };

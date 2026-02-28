@@ -2,10 +2,19 @@
 
 #include <vma/vk_mem_alloc.h>
 
+#include "LexviEngine/Logging/Logging.hpp"
 #include "BufferDescription.hpp"
+
+#include <expected>
+
+template<typename T>
+class MappedData;
 
 class Buffer {
     friend class Renderer;
+    friend class RenderContext;
+    template<typename T>
+    friend class MappedData;
 
     protected:
         std::string name = "";
@@ -28,6 +37,7 @@ class Buffer {
 
         ~Buffer() {
             if (buffer) {
+                LEXVI_ASSERT(allocator != VK_NULL_HANDLE, "Allocator is NULL");
                 vmaDestroyBuffer(allocator, buffer, allocation);
                 buffer = VK_NULL_HANDLE;
             }
@@ -36,7 +46,7 @@ class Buffer {
         Buffer(const Buffer&) = delete;
         void operator=(const Buffer&) = delete;
 
-        Buffer(Buffer&& other) {
+        Buffer(Buffer&& other) noexcept {
             this->name = std::move(other.name);
             this->buffer = other.buffer;
             this->allocation = other.allocation;
@@ -49,7 +59,7 @@ class Buffer {
             other.usage = {};
             other.allocator = VK_NULL_HANDLE;
         }
-        Buffer& operator=(Buffer&& other) {
+        Buffer& operator=(Buffer&& other) noexcept {
             if (this != &other) {
                 if (buffer) {
                     vmaDestroyBuffer(allocator, buffer, allocation);
@@ -65,6 +75,7 @@ class Buffer {
                 other.name = "";
                 other.allocation = {};
                 other.usage = {};
+                other.allocator = VK_NULL_HANDLE;
             }
 
             return *this;
@@ -79,10 +90,158 @@ class Buffer {
         bool operator==(const Buffer& other) const {
             return name == other.name && size == other.size && usage == other.usage;
         }
-        bool operator==(const BufferDescription& desc) const {
-            return name == desc.name && size == desc.size && usage == getUsageFlags(desc.usage);
+
+    public:
+        enum class MapError {
+            SIZE_MISMATCH,
+            NOT_CPU_VISIBLE
+        };
+        template<typename T = void>
+        std::expected<MappedData<T>, MapError> map() {
+            if constexpr (!std::is_same_v<T, void>) {
+                if (sizeof(T) != this->size) return std::unexpected(Buffer::MapError::SIZE_MISMATCH);
+            }
+            
+            MappedData<T> mapped;
+            if (!mapped.Set(*this)) return std::unexpected(Buffer::MapError::NOT_CPU_VISIBLE);
+
+            return mapped;
         }
 };
+
+template<typename T>
+class MappedData {
+    private:
+        Buffer* buffer = nullptr;
+        T* data = nullptr;
+
+    public:
+        MappedData() = default;
+        ~MappedData() {
+            UnSet();
+        }
+
+        MappedData(const MappedData&) = delete;
+        void operator=(const MappedData&) = delete;
+
+        MappedData(MappedData&& other) noexcept {
+            this->buffer = other.buffer;
+            this->data = other.data;
+
+            other.buffer = nullptr;
+            other.data = nullptr;
+        }
+        MappedData<T>& operator=(MappedData&& other) noexcept {
+            if (this != &other) {
+                UnSet();
+
+                this->buffer = other.buffer;
+                this->data = other.data;
+
+                other.buffer = nullptr;
+                other.data = nullptr;
+            }
+
+            return *this;
+        }
+
+    public:
+        T& operator*() const { return *data; }
+        T* operator->() const { return data; }
+        explicit operator bool() const { return data; }
+
+    private:
+        void UnSet() {
+            if (data && buffer) {
+                vmaUnmapMemory(buffer->allocator, buffer->allocation);
+
+                buffer = nullptr;
+                data = nullptr;
+            }
+        }
+
+    public:
+        [[nodiscard]] bool Set(Buffer& _buffer) {
+            this->buffer = &_buffer;
+
+            void* raw;
+            VkResult result = vmaMapMemory(buffer->allocator, buffer->allocation, &raw);
+
+            if (result == VK_SUCCESS) {
+                data = static_cast<T*>(raw);
+                return true;
+            }
+
+            return false;
+        }
+
+        T* get() const { return data; }
+};
+
+template<>
+class MappedData<void> {
+private:
+    Buffer* buffer = nullptr;
+    void* data = nullptr;
+
+public:
+        MappedData() = default;
+        ~MappedData() {
+            UnSet();
+        }
+
+        MappedData(const MappedData&) = delete;
+        void operator=(const MappedData&) = delete;
+
+        MappedData(MappedData&& other) noexcept {
+            this->buffer = other.buffer;
+            this->data = other.data;
+
+            other.buffer = nullptr;
+            other.data = nullptr;
+        }
+        MappedData<void>& operator=(MappedData&& other) noexcept {
+            if (this != &other) {
+                UnSet();
+
+                this->buffer = other.buffer;
+                this->data = other.data;
+
+                other.buffer = nullptr;
+                other.data = nullptr;
+            }
+
+            return *this;
+        }
+
+    private:
+        void UnSet() {
+            if (data && buffer) {
+                vmaUnmapMemory(buffer->allocator, buffer->allocation);
+
+                buffer = nullptr;
+                data = nullptr;
+            }
+        }
+
+public:
+    void* get() const { return data; }
+    explicit operator bool() const { return data != nullptr; }
+
+    bool Set(Buffer& buf) {
+        buffer = &buf;
+
+        void* raw = nullptr;
+        VkResult result = vmaMapMemory(buffer->allocator, buffer->allocation, &raw);
+
+        if (result != VK_SUCCESS) return false;
+
+        data = raw;
+        return true;
+    }
+};
+
+using MappedDataRaw = MappedData<void>;
 
 template<typename T>
 concept Buffer_T = std::is_base_of_v<Buffer, T>;
@@ -91,6 +250,30 @@ class VertexBuffer : public Buffer {
     public:
         VertexBuffer(const std::string& name) : Buffer(name, BufferUsage::VERTEX_BUFFER) {}
         VertexBuffer(const std::string& name, size_t size) : Buffer(name, size, BufferUsage::VERTEX_BUFFER) {}
+};
+
+class IndexBuffer : public Buffer {
+    friend class RenderContext;
+    public:
+        enum class IndexType {
+            UINT_8,
+            UINT_16,
+            UINT_32 
+        };
+
+        IndexBuffer(const std::string& name) : Buffer(name, BufferUsage::INDEX_BUFFER) {}
+        IndexBuffer(const std::string& name, size_t size) : Buffer(name, size, BufferUsage::INDEX_BUFFER) {}
+        IndexBuffer(const std::string& name, size_t size, IndexType indexType = IndexBuffer::IndexType::UINT_8)
+            : Buffer(name, size, BufferUsage::INDEX_BUFFER) {
+                switch (indexType) {
+                    case IndexType::UINT_8: this->indexType = vk::IndexType::eUint8; break;
+                    case IndexType::UINT_16: this->indexType = vk::IndexType::eUint16; break;
+                    case IndexType::UINT_32: this->indexType = vk::IndexType::eUint32; break;
+                }
+            }
+
+    private:
+        vk::IndexType indexType = vk::IndexType::eUint8;
 };
 
 class UniformBuffer : public Buffer {

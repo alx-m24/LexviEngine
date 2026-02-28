@@ -127,7 +127,7 @@ namespace RenderGraph {
             }
 
         private:
-            CompileResult Compile() {
+            CompileResult Compile(Renderer& renderer) {
                 if (std::holds_alternative<OrderedNodes>(m_nodes)) {
                     return CompileResult::ALREADY_COMPILED;
                 }
@@ -178,6 +178,8 @@ namespace RenderGraph {
                 }
 
                 m_nodes.emplace<OrderedNodes>(std::move(finalNodes)); // this also destructs UnsortedNodes
+                
+                for (auto& nodes : std::get<OrderedNodes>(m_nodes)) nodes->Init(renderer);
 
                 return CompileResult::OK;
             }

@@ -116,7 +116,12 @@ void transitionIfNeeded(vk::raii::CommandBuffer& cmd, ImageResource& res, bool i
 }
 
 void Renderer::Render() {
-    if (!m_renderGraph) {
+    std::shared_ptr<RenderGraph::RenderGraph> renderGraph = m_renderGraph.lock();
+    if (!renderGraph) {
+        return;
+    }
+
+    if (!renderGraph) {
         throw std::runtime_error("Render Graph not set: call Renderer::SetRenderGraph()");
     }
 
@@ -143,10 +148,10 @@ void Renderer::Render() {
         backBuffer.currentLayout = vk::ImageLayout::eUndefined;
         backBuffer.image = m_swapChainImages[imageIndex]; // friend access
         backBuffer.view = m_swapChainImageViews[imageIndex]; // friend access
-        m_renderGraph->SetResource("BackBuffer", std::move(backBuffer));
+        renderGraph->SetResource("BackBuffer", std::move(backBuffer));
     }
 
-    const RenderGraph::RenderGraph::OrderedNodes& nodes = m_renderGraph->getOrderedNodes()->get();
+    const RenderGraph::RenderGraph::OrderedNodes& nodes = renderGraph->getOrderedNodes()->get();
 
     vk::raii::CommandBuffer& buffer = m_commandBuffers[frameIndex];
 
@@ -202,6 +207,14 @@ void Renderer::Render() {
     }
     else {
     	assert(result == vk::Result::eSuccess);
+    }
+
+
+    for (auto it = m_transferBuffers.begin(); it != m_transferBuffers.end(); ) {
+        if (it->second.getStatus() != vk::Result::eNotReady) {
+            it = m_transferBuffers.erase(it); // destroys staging buffer and fence
+        }
+        else ++it;
     }
 
     frameIndex = (frameIndex + 1u) % MAX_FRAMES_IN_FLIGHT;

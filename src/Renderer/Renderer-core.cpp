@@ -13,7 +13,9 @@ namespace InitialValues {
 }
 
 Renderer::Renderer() = default;
-Renderer::~Renderer() = default;
+Renderer::~Renderer() {
+    Shutdown();
+}
 
 void Renderer::InitGLFW(const std::string& title) {
     glfwInit();
@@ -32,9 +34,16 @@ void Renderer::InitGLFW(const std::string& title) {
     glfwSetMouseButtonCallback(m_window, Input::MouseButtonCallback);
 }
 
-void Renderer::FrameBufferSizeCallback(GLFWwindow *window, int, int) {
+void Renderer::FrameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
     renderer->m_frameBufferResized = true; 
+    if (renderer->m_resizeCallback) {
+        renderer->m_resizeCallback(glm::uvec2{ width, height }); 
+    }
+}
+
+void Renderer::SetResizeCallback(ResizeCallBackFunc&& func) {
+    this->m_resizeCallback = std::forward<ResizeCallBackFunc>(func);
 }
 
 Renderer::InitResult Renderer::Init(const std::string& title) {
@@ -80,9 +89,7 @@ void Renderer::Update() {
 }
 
 void Renderer::Shutdown() {
-    m_device.waitIdle();
-
-    m_renderGraph.reset();
+    WaitIdle();
 
     if (m_allocator) {
         vmaDestroyAllocator(m_allocator);

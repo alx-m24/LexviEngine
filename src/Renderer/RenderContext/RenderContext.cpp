@@ -87,6 +87,14 @@ void RenderContext::BindPipeline(const Pipeline& pipeline) {
     pipeline.Bind(m_commandBuffer);
 }
 
+void RenderContext::BindBuffer(const VertexBuffer& buffer) {
+    m_commandBuffer.bindVertexBuffers(0, { buffer.buffer }, {0});
+}
+
+void RenderContext::BindBuffer(const IndexBuffer& buffer) {
+    m_commandBuffer.bindIndexBuffer(buffer.buffer, 0, buffer.indexType);
+}
+
 void RenderContext::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
     m_commandBuffer.draw(vertexCount, instanceCount, firstInstance, firstInstance);
 }

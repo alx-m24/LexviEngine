@@ -7,6 +7,7 @@
 
 #include "LexviEngine/Renderer/RenderGraph/ImageResource.hpp"
 #include "LexviEngine/Renderer/Pipeline/Pipeline.hpp"
+#include "LexviEngine/Renderer/Buffer/Buffer.hpp"
 
 enum class LoadOp {
     LOAD,
@@ -43,6 +44,9 @@ class RenderContext {
         void SetScissor(glm::uvec2 extent);
 
         void BindPipeline(const Pipeline& pipeline);
+        
+        void BindBuffer(const VertexBuffer& buffer);
+        void BindBuffer(const IndexBuffer& buffer);
 
         void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
 

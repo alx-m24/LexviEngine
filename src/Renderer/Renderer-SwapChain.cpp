@@ -106,10 +106,6 @@ void Renderer::reCreateSwapChain() {
 
 	CleanupSwapChain();
 	CreateSwapChain();
-
-    ImageResource& backBuffer = m_renderGraph->getResourceUnsafe("BackBuffer");
-    backBuffer.format = m_SwapChainSurfaceFormat.format;
-    backBuffer.extent = m_swapChainExtent;
 }
 
 void Renderer::CleanupSwapChain() {

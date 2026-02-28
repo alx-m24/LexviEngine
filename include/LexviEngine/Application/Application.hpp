@@ -12,7 +12,6 @@ namespace Lexvi {
 
 		protected:
 			ApplicationStack m_AppStack;
-            RenderGraph::RenderGraph m_renderGraph;
 
             ::Renderer& m_renderer;
 	
@@ -34,7 +33,5 @@ namespace Lexvi {
 
 		public:
 			bool isRunning() const;
-
-            RenderGraph::RenderGraph& getRenderGraph() { return m_renderGraph; }
 	};
 }
