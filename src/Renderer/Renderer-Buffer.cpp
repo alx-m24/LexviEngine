@@ -19,7 +19,7 @@ void Renderer::CopyBuffer(TransferBuffer&& src, const Buffer& dst) {
 	m_transferQueue.submit(vk::SubmitInfo{.commandBufferCount = 1, .pCommandBuffers = &*commandCopyBuffer}, m_transferBuffers.back().second);
 }
 
-void Renderer::SetVertexData(const VertexBuffer& buffer, const void* data, size_t size) {
+void Renderer::SetBufferData(const Buffer& buffer, const void* data, size_t size) {
     TransferBuffer stagingBuffer = this->CreateBuffer<TransferBuffer>(size);
     
     {
@@ -31,6 +31,6 @@ void Renderer::SetVertexData(const VertexBuffer& buffer, const void* data, size_
     CopyBuffer(std::move(stagingBuffer), buffer);
 }
 
-void Renderer::UpdateVertexData(const VertexBuffer& buffer, size_t offset, const void* data, size_t size) const {
+void Renderer::UpdateBufferData(const Buffer& buffer, size_t offset, const void* data, size_t size) {
 
 }

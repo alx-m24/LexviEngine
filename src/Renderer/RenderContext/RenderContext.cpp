@@ -96,7 +96,11 @@ void RenderContext::BindBuffer(const IndexBuffer& buffer) {
 }
 
 void RenderContext::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
-    m_commandBuffer.draw(vertexCount, instanceCount, firstInstance, firstInstance);
+    m_commandBuffer.draw(vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
+void RenderContext::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance) {
+    m_commandBuffer.drawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
 void RenderContext::EndRendering() {

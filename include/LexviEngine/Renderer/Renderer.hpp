@@ -210,9 +210,8 @@ class Renderer {
         void CopyBuffer(TransferBuffer&& src, const Buffer& dst);
 
     public:
-        void SetVertexData(const VertexBuffer& buffer, const void* data, size_t size);
-
-        void UpdateVertexData(const VertexBuffer& buffer, size_t offset, const void* data, size_t size) const;
+        void SetBufferData(const Buffer& buffer, const void* data, size_t size);
+        void UpdateBufferData(const Buffer& buffer, size_t offset, const void* data, size_t size);
 
         template<typename T>
         void UpdateUniform(const UniformBuffer& buffer, const T& data) const {

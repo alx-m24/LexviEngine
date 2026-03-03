@@ -266,7 +266,6 @@ class IndexBuffer : public Buffer {
         };
 
         IndexBuffer() : Buffer(BufferUsage::INDEX_BUFFER) {}
-        IndexBuffer(size_t size) : Buffer(size, BufferUsage::INDEX_BUFFER) {}
         IndexBuffer(size_t size, IndexType indexType = IndexBuffer::IndexType::UINT_8)
             : Buffer(size, BufferUsage::INDEX_BUFFER) {
                 switch (indexType) {
