@@ -98,7 +98,6 @@ FetchContent_MakeAvailable(vma)
 target_include_directories(${PROJECT_NAME}
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE
         ${glm_SOURCE_DIR}
         ${vma_SOURCE_DIR}/include
         ${Vulkan_INCLUDE_DIRS}

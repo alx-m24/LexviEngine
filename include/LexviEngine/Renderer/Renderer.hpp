@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <vma/vk_mem_alloc.h>
+#include <vk_mem_alloc.h>
 #include <vulkan/vulkan_raii.hpp>
 
 #include "LexviEngine/Renderer/Pipeline/PipelineDescription.hpp"
@@ -75,7 +75,7 @@ class Renderer {
 
         std::weak_ptr<RenderGraph::RenderGraph> m_renderGraph;
 
-        std::vector<std::pair<TransferBuffer, vk::raii::Fence>> m_transferBuffers;
+        std::vector<std::pair<std::pair<TransferBuffer, vk::raii::CommandBuffer>, vk::raii::Fence>> m_transferBuffers;
 
         VmaAllocator m_allocator{};
         
@@ -183,12 +183,24 @@ class Renderer {
             vk::BufferCreateInfo bufferInfo {
                 .size = buffer.size,
                 .usage = buffer.usage,
+                .sharingMode = vk::SharingMode::eExclusive
             };
             
-            VmaAllocationCreateInfo allocInfo{};
-            allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+            VmaAllocationCreateInfo allocInfo {};
+
+            if constexpr (std::is_same_v<T, UniformBuffer> || std::is_same_v<T, TransferBuffer>) {
+                allocInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+                allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+            }
+            else {
+                allocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO;
+            }
         
-            vmaCreateBuffer(m_allocator, &*bufferInfo, &allocInfo, &buffer.buffer, &buffer.allocation, nullptr);
+            VkResult result = vmaCreateBuffer(m_allocator, &*bufferInfo, &allocInfo, &buffer.buffer, &buffer.allocation, nullptr);
+            if (result != VK_SUCCESS) {
+                Lexvi::Log("Failed to create {} buffer: {}", std::string_view(std::is_same_v<T, VertexBuffer> ? "VertexBuffer" : "TransferBuffer"), static_cast<int>(result));
+                return {};
+            }
             buffer.allocator = m_allocator;
 
             return buffer;

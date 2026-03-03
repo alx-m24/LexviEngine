@@ -1,7 +1,7 @@
 #include "LexviEngine/pch.hpp"
 #include "LexviEngine/Renderer/Renderer.hpp"
 #include "LexviEngine/Renderer/Renderer-Exceptions.hpp"
-#include <vma/vk_mem_alloc.h>
+#include <vk_mem_alloc.h>
 
 void Renderer::CreateAllocator() {
     VmaAllocatorCreateInfo createInfo{};

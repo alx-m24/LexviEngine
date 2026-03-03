@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 enum class VertexInputRate {
     PER_VERTEX = 0,
     PER_INSTANCE

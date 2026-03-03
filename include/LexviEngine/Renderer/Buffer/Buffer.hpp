@@ -1,6 +1,6 @@
 #pragma once 
 
-#include <vma/vk_mem_alloc.h>
+#include <vk_mem_alloc.h>
 
 #include "LexviEngine/Logging/Logging.hpp"
 #include "BufferDescription.hpp"
@@ -17,7 +17,6 @@ class Buffer {
     friend class MappedData;
 
     protected:
-        std::string name = "";
         VkBuffer buffer = VK_NULL_HANDLE;
         VmaAllocation allocation = {};
         vk::BufferUsageFlags usage = {};
@@ -28,12 +27,12 @@ class Buffer {
         size_t size = 0;
 
     public:
-        Buffer(const std::string& name) : name(name) {}
+        Buffer() = default;
 
-        Buffer(const std::string& name, size_t size) : name(name), size(size) {}
+        Buffer(size_t size) : size(size) {}
 
-        Buffer(const std::string& name, BufferUsage bufferUsage) : name(name), usage(getUsageFlags(bufferUsage)) {}
-        Buffer(const std::string& name, size_t size, BufferUsage bufferUsage) : name(name), usage(getUsageFlags(bufferUsage)), size(size) {}
+        Buffer(BufferUsage bufferUsage) : usage(getUsageFlags(bufferUsage)) {}
+        Buffer(size_t size, BufferUsage bufferUsage) : usage(getUsageFlags(bufferUsage)), size(size) {}
 
         ~Buffer() {
             if (buffer) {
@@ -47,17 +46,23 @@ class Buffer {
         void operator=(const Buffer&) = delete;
 
         Buffer(Buffer&& other) noexcept {
-            this->name = std::move(other.name);
-            this->buffer = other.buffer;
-            this->allocation = other.allocation;
-            this->usage = other.usage;
-            this->allocator = other.allocator;
+            if (this != &other) {
+                if (buffer) {
+                    vmaDestroyBuffer(allocator, buffer, allocation);
+                }
 
-            other.buffer = VK_NULL_HANDLE;
-            other.name = "";
-            other.allocation = {};
-            other.usage = {};
-            other.allocator = VK_NULL_HANDLE;
+                this->buffer = other.buffer;
+                this->allocation = other.allocation;
+                this->usage = other.usage;
+                this->allocator = other.allocator;
+                this->size = other.size;
+
+                other.buffer = VK_NULL_HANDLE;
+                other.allocation = {};
+                other.usage = {};
+                other.allocator = VK_NULL_HANDLE;
+                other.size = 0;
+            }
         }
         Buffer& operator=(Buffer&& other) noexcept {
             if (this != &other) {
@@ -65,17 +70,17 @@ class Buffer {
                     vmaDestroyBuffer(allocator, buffer, allocation);
                 }
 
-                this->name = std::move(other.name);
                 this->buffer = other.buffer;
                 this->allocation = other.allocation;
                 this->usage = other.usage;
                 this->allocator = other.allocator;
+                this->size = other.size;
 
                 other.buffer = VK_NULL_HANDLE;
-                other.name = "";
                 other.allocation = {};
                 other.usage = {};
                 other.allocator = VK_NULL_HANDLE;
+                other.size = 0;
             }
 
             return *this;
@@ -85,10 +90,9 @@ class Buffer {
         static vk::BufferUsageFlags getUsageFlags(BufferUsage usage);
 
     public:
-        std::string getName() const { return name; }
 
         bool operator==(const Buffer& other) const {
-            return name == other.name && size == other.size && usage == other.usage;
+            return size == other.size && usage == other.usage;
         }
 
     public:
@@ -248,8 +252,8 @@ concept Buffer_T = std::is_base_of_v<Buffer, T>;
 
 class VertexBuffer : public Buffer {
     public:
-        VertexBuffer(const std::string& name) : Buffer(name, BufferUsage::VERTEX_BUFFER) {}
-        VertexBuffer(const std::string& name, size_t size) : Buffer(name, size, BufferUsage::VERTEX_BUFFER) {}
+        VertexBuffer() : Buffer(BufferUsage::VERTEX_BUFFER) {}
+        VertexBuffer(size_t size) : Buffer(size, BufferUsage::VERTEX_BUFFER) {}
 };
 
 class IndexBuffer : public Buffer {
@@ -261,10 +265,10 @@ class IndexBuffer : public Buffer {
             UINT_32 
         };
 
-        IndexBuffer(const std::string& name) : Buffer(name, BufferUsage::INDEX_BUFFER) {}
-        IndexBuffer(const std::string& name, size_t size) : Buffer(name, size, BufferUsage::INDEX_BUFFER) {}
-        IndexBuffer(const std::string& name, size_t size, IndexType indexType = IndexBuffer::IndexType::UINT_8)
-            : Buffer(name, size, BufferUsage::INDEX_BUFFER) {
+        IndexBuffer() : Buffer(BufferUsage::INDEX_BUFFER) {}
+        IndexBuffer(size_t size) : Buffer(size, BufferUsage::INDEX_BUFFER) {}
+        IndexBuffer(size_t size, IndexType indexType = IndexBuffer::IndexType::UINT_8)
+            : Buffer(size, BufferUsage::INDEX_BUFFER) {
                 switch (indexType) {
                     case IndexType::UINT_8: this->indexType = vk::IndexType::eUint8; break;
                     case IndexType::UINT_16: this->indexType = vk::IndexType::eUint16; break;
@@ -278,12 +282,12 @@ class IndexBuffer : public Buffer {
 
 class UniformBuffer : public Buffer {
     public:
-        UniformBuffer(const std::string& name) : Buffer(name, BufferUsage::UNIFORM_BUFFER) {}
-        UniformBuffer(const std::string& name, size_t size) : Buffer(name, size, BufferUsage::UNIFORM_BUFFER) {}
+        UniformBuffer() : Buffer(BufferUsage::UNIFORM_BUFFER) {}
+        UniformBuffer(size_t size) : Buffer(size, BufferUsage::UNIFORM_BUFFER) {}
 };
 
 class TransferBuffer : public Buffer {
     public:
-        TransferBuffer(const std::string& name) : Buffer(name, BufferUsage::TRANSFER_BUFFER) {}
-        TransferBuffer(const std::string& name, size_t size) : Buffer(name, size, BufferUsage::TRANSFER_BUFFER) {}
+        TransferBuffer() : Buffer(BufferUsage::TRANSFER_BUFFER) {}
+        TransferBuffer(size_t size) : Buffer(size, BufferUsage::TRANSFER_BUFFER) {}
 };

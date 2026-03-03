@@ -31,7 +31,7 @@ namespace RenderGraph {
             virtual ~RenderPass() = default;
 
         public:
-            virtual void Init(const Renderer& renderer) = 0;
+            virtual void Init(Renderer& renderer) = 0;
 
             virtual void BeginPass(RenderContext& renderContext) = 0;
             virtual void RunPass(RenderContext& renderContext) = 0;
