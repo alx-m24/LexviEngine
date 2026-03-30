@@ -1,0 +1,167 @@
+[35mProject Name: LexviEngine    Project Path: /home/alexa/dev/LexviEngine [0m
+
+[35mBuilding...[0m
+
+[35mBuilding to: /home/alexa/dev/LexviEngine/build/windows/debug [0m
+
+[35mBuilding with -DCMAKE_BUILD_TYPE=debug -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_SYSTEM_NAME=Windows -DVulkan_INCLUDE_DIR='/mnt/c/VulkanSDK/1.4.341.1/Include' -DVulkan_LIBRARY='/mnt/c/VulkanSDK/1.4.341.1/Lib/vulkan-1.lib' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_C_FLAGS=-O0 -g3 -fno-omit-frame-pointer -fno-inline -Wall -Wextra -DCMAKE_CXX_FLAGS=-O0 -g3 -fno-omit-frame-pointer -fno-inline -Wall -Wextra /home/alexa/dev/LexviEngine[0m
+-- Shared libraries disabled
+-- compiling zlib from sources
+-- tinyusdz disabled
+-- Enabled importer formats: AMF 3DS AC ASE ASSBIN B3D BVH COLLADA DXF CSM HMP IRRMESH IQM IRR LWO LWS M3D MD2 MD3 MD5 MDC MDL NFF NDO OFF OBJ OGRE OPENGEX PLY MS3D COB BLEND IFC XGL FBX Q3D Q3BSP RAW SIB SMD STL TERRAGEN 3D X X3D GLTF 3MF MMD
+-- Disabled importer formats: USD
+-- Enabled exporter formats: OBJ OPENGEX PLY 3DS ASSBIN ASSXML M3D COLLADA FBX STL X X3D GLTF 3MF PBRT ASSJSON STEP
+-- Disabled exporter formats:
+-- Treating all warnings as errors (for assimp library only)
+-- Including Win32 support
+-- GLM: Version 1.0.2
+-- GLM: Build with C++ features auto detection
+-- Configuring done (5.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/alexa/dev/LexviEngine/build/windows/debug
+[0/2] Re-checking globbed directories...
+[1/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/gBuffer.cpp.obj
+[2/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Renderer/Renderer.cpp.obj
+FAILED: CMakeFiles/LexviEngine.dir/src/Renderer/Renderer.cpp.obj 
+/usr/bin/ccache ccache /usr/bin/x86_64-w64-mingw32-g++  -I/home/alexa/dev/LexviEngine/include -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/assimp-src/code/../include -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/assimp-build/code/../include -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/implot-src -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/imgui-src -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/glad-build/include -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/glfw-src/include -I/home/alexa/dev/LexviEngine/build/windows/debug/_deps/glm-src -O0 -g3 -fno-omit-frame-pointer -fno-inline -Wall -Wextra -g -std=gnu++23 -static-libgcc -MD -MT CMakeFiles/LexviEngine.dir/src/Renderer/Renderer.cpp.obj -MF CMakeFiles/LexviEngine.dir/src/Renderer/Renderer.cpp.obj.d -o CMakeFiles/LexviEngine.dir/src/Renderer/Renderer.cpp.obj -c /home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp
+In file included from /home/alexa/dev/LexviEngine/include/Renderer/Renderer.hpp:4,
+                 from /home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp:3:
+/home/alexa/dev/LexviEngine/include/Camera/Camera.hpp: In member function ‘virtual void Lexvi::Camera::update(float)’:
+/home/alexa/dev/LexviEngine/include/Camera/Camera.hpp:75:35: warning: unused parameter ‘dt’ [-Wunused-parameter]
+   75 |         virtual void update(float dt) {
+      |                             ~~~~~~^~
+In file included from /home/alexa/dev/LexviEngine/include/Renderer/Renderer.hpp:5:
+/home/alexa/dev/LexviEngine/include/Renderable/IRenderable/IRenderable.hpp: In member function ‘virtual bool Lexvi::IRenderable::isVisible(const Lexvi::Camera&) const’:
+/home/alexa/dev/LexviEngine/include/Renderable/IRenderable/IRenderable.hpp:22:54: warning: unused parameter ‘camera’ [-Wunused-parameter]
+   22 |                 virtual bool isVisible(const Camera& camera) const {
+      |                                        ~~~~~~~~~~~~~~^~~~~~
+/home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp: In member function ‘void Lexvi::Renderer::Draw(Lexvi::IRenderable&, const Lexvi::Camera&, const Lexvi::Shader*) const’:
+/home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp:19:67: error: no matching function for call to ‘std::exception::exception(const char [28])’
+   19 |                 throw std::exception("No Shader availabe to draw.");
+      |                                                                   ^
+In file included from /usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/new:41,
+                 from /usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/stl_iterator.h:82,
+                 from /usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/stl_algobase.h:67,
+                 from /usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/specfun.h:43,
+                 from /usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/cmath:3699,
+                 from /home/alexa/dev/LexviEngine/build/windows/debug/_deps/assimp-src/code/../include/assimp/vector2.h:53,
+                 from /home/alexa/dev/LexviEngine/build/windows/debug/_deps/assimp-src/code/../include/assimp/types.h:64,
+                 from /home/alexa/dev/LexviEngine/build/windows/debug/_deps/assimp-src/code/../include/assimp/Importer.hpp:58,
+                 from /home/alexa/dev/LexviEngine/include/pch.h:13,
+                 from /home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp:1:
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:67:5: note: candidate: ‘constexpr std::exception::exception(std::exception&&)’
+   67 |     exception(exception&&) = default;
+      |     ^~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:67:15: note:   no known conversion for argument 1 from ‘const char [28]’ to ‘std::exception&&’
+   67 |     exception(exception&&) = default;
+      |               ^~~~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:65:5: note: candidate: ‘constexpr std::exception::exception(const std::exception&)’
+   65 |     exception(const exception&) = default;
+      |     ^~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:65:15: note:   no known conversion for argument 1 from ‘const char [28]’ to ‘const std::exception&’
+   65 |     exception(const exception&) = default;
+      |               ^~~~~~~~~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:62:5: note: candidate: ‘std::exception::exception()’
+   62 |     exception() _GLIBCXX_NOTHROW { }
+      |     ^~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:62:5: note:   candidate expects 0 arguments, 1 provided
+/home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp: In member function ‘void Lexvi::Renderer::Draw(std::vector<Lexvi::IRenderable>&, const Lexvi::Camera&, const Lexvi::Shader*) const’:
+/home/alexa/dev/LexviEngine/src/Renderer/Renderer.cpp:41:67: error: no matching function for call to ‘std::exception::exception(const char [28])’
+   41 |                 throw std::exception("No Shader availabe to draw.");
+      |                                                                   ^
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:67:5: note: candidate: ‘constexpr std::exception::exception(std::exception&&)’
+   67 |     exception(exception&&) = default;
+      |     ^~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:67:15: note:   no known conversion for argument 1 from ‘const char [28]’ to ‘std::exception&&’
+   67 |     exception(exception&&) = default;
+      |               ^~~~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:65:5: note: candidate: ‘constexpr std::exception::exception(const std::exception&)’
+   65 |     exception(const exception&) = default;
+      |     ^~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:65:15: note:   no known conversion for argument 1 from ‘const char [28]’ to ‘const std::exception&’
+   65 |     exception(const exception&) = default;
+      |               ^~~~~~~~~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:62:5: note: candidate: ‘std::exception::exception()’
+   62 |     exception() _GLIBCXX_NOTHROW { }
+      |     ^~~~~~~~~
+/usr/lib/gcc/x86_64-w64-mingw32/13-win32/include/c++/bits/exception.h:62:5: note:   candidate expects 0 arguments, 1 provided
+[3/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/IndirectBuffer.cpp.obj
+[4/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/Random.cpp.obj
+[5/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/Logging.cpp.obj
+[6/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/SSBO.cpp.obj
+[7/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Textures/Textures.cpp.obj
+/home/alexa/dev/LexviEngine/src/Textures/Textures.cpp: In function ‘Lexvi::Texture Lexvi::Create3DComputeTexture(unsigned int, unsigned int, unsigned int, unsigned int)’:
+/home/alexa/dev/LexviEngine/src/Textures/Textures.cpp:246:49: warning: unused parameter ‘layers’ [-Wunused-parameter]
+  246 |     Texture Create3DComputeTexture(unsigned int layers, unsigned int width, unsigned int height, unsigned int channelNum) {
+      |                                    ~~~~~~~~~~~~~^~~~~~
+[8/426] Building CXX object CMakeFiles/LexviEngine.dir/src/pch.cpp.obj
+[9/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/UBO.cpp.obj
+[10/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/snoise.cpp.obj
+[11/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Shader/Shader.cpp.obj
+[12/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/FrameBuffer.cpp.obj
+In file included from /home/alexa/dev/LexviEngine/src/Utils/FrameBuffer.cpp:3:
+/home/alexa/dev/LexviEngine/include/Utils/FrameBuffer.hpp: In constructor ‘Lexvi::FrameBuffer::FrameBuffer(Lexvi::FrameBufferAttachments, unsigned int, unsigned int, unsigned int)’:
+/home/alexa/dev/LexviEngine/include/Utils/FrameBuffer.hpp:29:30: warning: ‘Lexvi::FrameBuffer::colorAttachmentNum’ will be initialized after [-Wreorder]
+   29 |                 unsigned int colorAttachmentNum = 0;
+      |                              ^~~~~~~~~~~~~~~~~~
+/home/alexa/dev/LexviEngine/include/Utils/FrameBuffer.hpp:28:30: warning:   ‘unsigned int Lexvi::FrameBuffer::width’ [-Wreorder]
+   28 |                 unsigned int width = 0, height = 0;
+      |                              ^~~~~
+/home/alexa/dev/LexviEngine/include/Utils/FrameBuffer.hpp:41:17: warning:   when initialized here [-Wreorder]
+   41 |                 FrameBuffer(FrameBufferAttachments attachments, unsigned int colorAttachmentNum, unsigned int width, unsigned int height) : attachments(attachments), colorAttachmentNum(colorAttachmentNum), width(width), height(height) { CreateFrameBuffer(); };
+      |                 ^~~~~~~~~~~
+[13/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Systems/Systems.cpp.obj
+[14/426] Building CXX object CMakeFiles/LexviEngine.dir/src/stb_impl/stb_impl.cpp.obj
+In file included from /home/alexa/dev/LexviEngine/src/stb_impl/stb_impl.cpp:8:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_bmp_to_func(void (*)(void*, void*, int), void*, int, int, int, const void*)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:514:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+  514 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:514:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:514:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_bmp(const char*, int, int, int, const void*)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:522:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+  522 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:522:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:522:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_tga_to_func(void (*)(void*, void*, int), void*, int, int, int, const void*)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:613:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+  613 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:613:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:613:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_tga(const char*, int, int, int, const void*)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:621:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+  621 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:621:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:621:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_hdr_to_func(void (*)(void*, void*, int), void*, int, int, int, const float*)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:789:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+  789 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:789:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:789:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_hdr(const char*, int, int, int, const float*)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:796:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+  796 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:796:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:796:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_jpg_to_func(void (*)(void*, void*, int), void*, int, int, int, const void*, int)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:1609:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+ 1609 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:1609:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:1609:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h: In function ‘int stbi_write_jpg(const char*, int, int, int, const void*, int)’:
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:1618:32: warning: missing initializer for member ‘stbi__write_context::context’ [-Wmissing-field-initializers]
+ 1618 |    stbi__write_context s = { 0 };
+      |                                ^
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:1618:32: warning: missing initializer for member ‘stbi__write_context::buffer’ [-Wmissing-field-initializers]
+/home/alexa/dev/LexviEngine/include/stb_image_write.h:1618:32: warning: missing initializer for member ‘stbi__write_context::buf_used’ [-Wmissing-field-initializers]
+[15/426] Building CXX object CMakeFiles/LexviEngine.dir/src/Utils/Hash.cpp.obj
+ninja: build stopped: subcommand failed.
+
+[35mDone Building[0m

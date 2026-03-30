@@ -16,7 +16,7 @@ void Lexvi::Renderer::Draw(IRenderable& obj, const Camera& camera, const Shader*
 	const Shader* currentShader = setCurrentShader(shader);
 
 	if (!currentShader) {
-		throw std::exception("No Shader availabe to draw.");
+		throw std::runtime_error("No Shader availabe to draw.");
 		return;
 	}
 
@@ -38,7 +38,7 @@ void Lexvi::Renderer::Draw(std::vector<IRenderable>& objects, const Camera& came
 	const Shader* currentShader = setCurrentShader(shader);
 
 	if (!currentShader) {
-		throw std::exception("No Shader availabe to draw.");
+		throw std::runtime_error("No Shader availabe to draw.");
 		return;
 	}
 

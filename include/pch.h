@@ -9,6 +9,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 // Standard C++ headers
+#include <stdexcept>
 #include <cassert>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
