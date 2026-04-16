@@ -10,8 +10,11 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
 
 add_library(LexviEngine STATIC ${ENGINE_SOURCES})
 
+target_precompile_headers(LexviEngine PRIVATE include/pch.h)
+
 target_include_directories(LexviEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/LexviEngine # for backwards compatibility
 )
 
 include(FetchContent)
