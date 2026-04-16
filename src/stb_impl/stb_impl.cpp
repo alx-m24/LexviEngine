@@ -1,8 +1,12 @@
 // stb_impl.cpp
 #include "pch.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#ifndef STB_IMAGE_IMPLEMENTATION
+    #define STB_IMAGE_IMPLEMENTATION
+    #include <stb_image.h>
+#endif
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
+#ifndef STB_IMAGE_WRITE_IMPLEMENTATION
+    #define STB_IMAGE_WRITE_IMPLEMENTATION
+    #include <stb_image_write.h>
+#endif
