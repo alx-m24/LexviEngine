@@ -12,4 +12,5 @@ namespace Lexvi {
         glm::vec3 min;
         glm::vec3 max;
     };
+
 }
